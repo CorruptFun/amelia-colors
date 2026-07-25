@@ -4,3 +4,6 @@
 # the app makes no network calls and has no secrets — keep it that way
 .env
 .env.*
+
+# contact sheets from scripts/render-sheets.js
+.render-sheets/

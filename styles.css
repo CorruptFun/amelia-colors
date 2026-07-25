@@ -1,0 +1,420 @@
+/* =============================================================
+   Amelia Colors — big, bright, thumb-friendly
+   Design rules: nothing tappable under 56px, no essential text,
+   colour + emoji carry the meaning.
+   ============================================================= */
+
+:root {
+  --pink:   #FF5FA2;
+  --coral:  #FF7A59;
+  --amber:  #FFC803;
+  --grass:  #2ECC71;
+  --sky:    #26C6FF;
+  --blue:   #2D7DFF;
+  --grape:  #9B5DE5;
+  --ink:    #2A2350;
+  --paper:  #FFFFFF;
+  --shadow: 0 6px 0 rgba(42,35,80,.16), 0 12px 26px rgba(42,35,80,.14);
+  --r-lg: 30px;
+  --r-md: 22px;
+  --tap: 60px;
+  --dock-pad: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0; height: 100%; overflow: hidden;
+  overscroll-behavior: none;
+  font-family: ui-rounded, "SF Pro Rounded", "Hiragino Maru Gothic ProN",
+               "Baloo 2", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  background: #FFE9F3;
+  user-select: none; -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+body::before {
+  content: ""; position: fixed; inset: -20%;
+  background:
+    radial-gradient(38% 32% at 14% 12%, #FFD3E6 0%, transparent 60%),
+    radial-gradient(34% 30% at 86% 18%, #D6ECFF 0%, transparent 60%),
+    radial-gradient(40% 34% at 20% 88%, #DFF7DC 0%, transparent 62%),
+    radial-gradient(36% 32% at 84% 84%, #FFF0C7 0%, transparent 62%),
+    linear-gradient(160deg, #FFF6FB 0%, #F3F8FF 100%);
+  z-index: -2;
+  animation: drift 26s ease-in-out infinite alternate;
+}
+@keyframes drift { to { transform: translate3d(2%, -2%, 0) scale(1.06); } }
+
+#app { position: fixed; inset: 0; }
+
+.screen {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.screen.is-active { display: flex; animation: pop-in .28s cubic-bezier(.2,1.3,.5,1); }
+@keyframes pop-in { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
+
+/* ---------------- shared buttons ---------------- */
+.round-btn, .pill-btn, .tool, .corner-btn {
+  border: none; cursor: pointer; font: inherit;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 4px 0 rgba(42,35,80,.15), 0 8px 18px rgba(42,35,80,.12);
+  transition: transform .09s, box-shadow .09s, background .15s;
+}
+.round-btn {
+  width: var(--tap); height: var(--tap); min-width: var(--tap);
+  border-radius: 50%; font-size: 27px; line-height: 1;
+  display: grid; place-items: center;
+}
+.round-btn.ghost { box-shadow: none; background: transparent; opacity: .5; }
+.pill-btn {
+  height: var(--tap); padding: 0 22px; border-radius: 999px;
+  font-size: 20px; font-weight: 800; white-space: nowrap;
+  background: linear-gradient(180deg, #6EE7A8, #16A765);
+  color: #05341C;
+}
+.round-btn:active, .pill-btn:active, .tool:active, .corner-btn:active,
+.tile:active, .card:active {
+  transform: translateY(4px); box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+.round-btn[disabled] { opacity: .32; }
+
+.corner-btn {
+  position: absolute; top: calc(env(safe-area-inset-top, 0px) + 14px); right: 14px;
+  width: 54px; height: 54px; border-radius: 50%; font-size: 24px;
+}
+
+/* ---------------- home ---------------- */
+.home-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: clamp(8px, 2.2vh, 26px); padding: 16px;
+  min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+.logo {
+  margin: 0; font-size: clamp(38px, 9vw, 74px); font-weight: 900;
+  letter-spacing: -1px; line-height: .95; text-align: center;
+}
+.logo span { display: inline-block; animation: bob 2.6s ease-in-out infinite; }
+.logo span:nth-child(1){ color:#FF3B6B; animation-delay:0s }
+.logo span:nth-child(2){ color:#FF9F1C; animation-delay:.1s }
+.logo span:nth-child(3){ color:#FFC803; animation-delay:.2s }
+.logo span:nth-child(4){ color:#2ECC71; animation-delay:.3s }
+.logo span:nth-child(5){ color:#26C6FF; animation-delay:.4s }
+.logo span:nth-child(6){ color:#9B5DE5; animation-delay:.5s }
+.logo em {
+  display: block; font-style: normal; font-size: .52em; color: var(--ink);
+  letter-spacing: 4px; text-transform: uppercase; opacity: .8; margin-top: .1em;
+}
+@keyframes bob { 0%,100% { transform: translateY(0) rotate(0) } 50% { transform: translateY(-9px) rotate(-3deg) } }
+
+.tagline { margin: 0; font-size: clamp(15px, 3.6vw, 21px); font-weight: 700; opacity: .62; text-align: center; }
+
+.home-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: clamp(10px, 2.4vw, 18px);
+  width: min(560px, 94vw);
+}
+.tile {
+  position: relative; border: none; cursor: pointer; font: inherit;
+  aspect-ratio: 1 / .82;
+  border-radius: var(--r-lg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; color: #fff;
+  box-shadow: var(--shadow);
+  transition: transform .1s, box-shadow .1s;
+}
+.tile-emoji { font-size: clamp(38px, 11vw, 62px); line-height: 1; filter: drop-shadow(0 3px 4px rgba(0,0,0,.18)); }
+.tile-label { font-size: clamp(16px, 4.4vw, 25px); font-weight: 900; letter-spacing: .3px; text-shadow: 0 2px 3px rgba(0,0,0,.2); }
+.tile-draw    { background: linear-gradient(160deg,#FF7BA9,#FF3B6B); }
+.tile-color   { background: linear-gradient(160deg,#68D8FF,#2D7DFF); }
+.tile-gallery { background: linear-gradient(160deg,#8DE79B,#20B45C); }
+.tile-surprise{ background: linear-gradient(160deg,#C79BFF,#8B3DFF); }
+.badge {
+  position: absolute; top: 10px; right: 12px; min-width: 30px; height: 30px;
+  border-radius: 999px; background: #fff; color: var(--ink);
+  font-size: 15px; font-weight: 900; display: grid; place-items: center; padding: 0 8px;
+}
+.resume-chip {
+  border: none; font: inherit; cursor: pointer;
+  background: #fff; color: var(--ink); font-weight: 800; font-size: 16px;
+  padding: 14px 22px; border-radius: 999px; box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* ---------------- add to home screen coach ---------------- */
+.a2hs {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  width: min(430px, calc(100vw - 24px));
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 12px 11px 14px; border-radius: 18px;
+  background: #2A2350; color: #fff;
+  box-shadow: 0 10px 30px rgba(42,35,80,.35);
+  animation: toast-in .34s cubic-bezier(.2,1.3,.5,1);
+  z-index: 40;
+}
+.a2hs-ico { font-size: 24px; line-height: 1; flex: none; }
+.a2hs-txt { flex: 1; min-width: 0; font-size: 14px; font-weight: 800; line-height: 1.3; }
+.a2hs-add {
+  flex: none; border: none; cursor: pointer; font: inherit;
+  border-radius: 12px; padding: 10px 16px; font-size: 14px; font-weight: 900;
+  background: linear-gradient(180deg, #FFE066, #FFB703); color: #5A3B00;
+}
+.a2hs-x {
+  flex: none; border: none; cursor: pointer;
+  width: 34px; height: 34px; border-radius: 11px;
+  background: rgba(255,255,255,.14); color: #E4E7F2; font-size: 17px; font-weight: 900;
+}
+.a2hs-add:active, .a2hs-x:active { filter: brightness(.9); }
+
+/* ---------------- topbar + grids ---------------- */
+.topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+}
+.topbar h2 { flex: 1; margin: 0; text-align: center; font-size: clamp(19px, 5vw, 27px); font-weight: 900; }
+
+.scroller { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 4px 14px 26px; }
+
+.cat-grid {
+  display: grid; gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  max-width: 960px; margin: 0 auto;
+}
+.card {
+  border: none; font: inherit; cursor: pointer;
+  border-radius: var(--r-lg); padding: 18px 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  color: #fff; box-shadow: var(--shadow);
+  transition: transform .1s, box-shadow .1s;
+}
+.card .c-emoji { font-size: 46px; line-height: 1; filter: drop-shadow(0 3px 4px rgba(0,0,0,.18)); }
+.card .c-name { font-size: 18px; font-weight: 900; text-shadow: 0 2px 3px rgba(0,0,0,.18); }
+.card .c-count { font-size: 13px; font-weight: 700; opacity: .85; }
+
+.page-grid {
+  display: grid; gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  max-width: 1000px; margin: 0 auto;
+}
+.thumb {
+  position: relative; border: none; font: inherit; cursor: pointer;
+  background: #fff; border-radius: var(--r-md); padding: 8px 6px 6px;
+  box-shadow: 0 4px 0 rgba(42,35,80,.12), 0 8px 16px rgba(42,35,80,.1);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  transition: transform .1s, box-shadow .1s;
+}
+.thumb:active { transform: translateY(4px); box-shadow: none; }
+.thumb img { width: 100%; aspect-ratio: 1; object-fit: contain; display: block; border-radius: 14px; }
+.thumb.art img { aspect-ratio: 1; background: #fff; }
+.thumb .t-name { font-size: 12.5px; font-weight: 800; opacity: .72; text-align: center;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+/* deliberately smaller than a normal target so little fingers don't hit
+   it by accident — a confirm dialog backs it up as well */
+.thumb .t-del {
+  position: absolute; top: -6px; right: -6px; width: 38px; height: 38px;
+  border-radius: 50%; border: none; background: #FF3B6B; color: #fff;
+  font-size: 17px; cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,.22);
+  display: grid; place-items: center;
+}
+.empty-note { text-align: center; opacity: .55; font-weight: 800; font-size: 17px; padding: 44px 20px; grid-column: 1/-1; }
+
+/* ---------------- studio ---------------- */
+.studio { padding: 0; }
+.studio-top {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px 6px;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
+}
+.studio-top .spacer { flex: 1; min-width: 4px; }
+.studio-top .round-btn, .studio-top .pill-btn { flex: 0 0 auto; }
+
+/* the bar scales with the viewport so it never needs to scroll */
+.studio-top { --tap: clamp(46px, 13vw, 60px); }
+.studio-top .round-btn { font-size: clamp(20px, 6vw, 27px); }
+.studio-top .pill-btn { padding: 0 clamp(12px, 4vw, 22px); font-size: clamp(16px, 4.4vw, 20px); }
+@media (max-width: 430px) { #btn-done .done-text { display: none; } }
+
+/* the stage is the sizing authority: it has a definite box, so the
+   canvas's max-width/max-height percentages actually resolve */
+.stage { flex: 1; min-height: 0; min-width: 0; position: relative; padding: 2px 10px; }
+.paper {
+  position: absolute; inset: 2px 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+#canvas {
+  max-width: 100%; max-height: 100%; width: auto; height: auto;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 6px 0 rgba(42,35,80,.12), 0 14px 30px rgba(42,35,80,.16);
+  touch-action: none;
+  display: block;
+}
+.hint {
+  position: absolute; inset: 0; display: grid; place-items: center; gap: 6px;
+  pointer-events: none; font-size: 54px;
+  animation: hint-pulse 1.5s ease-in-out infinite;
+}
+.hint span { font-size: 19px; font-weight: 900; background: #fff; padding: 8px 16px;
+  border-radius: 999px; box-shadow: var(--shadow); }
+@keyframes hint-pulse { 0%,100% { transform: scale(1); opacity: .95 } 50% { transform: scale(1.12); opacity: .7 } }
+
+.dock {
+  background: rgba(255,255,255,.82);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-radius: 26px 26px 0 0;
+  box-shadow: 0 -6px 20px rgba(42,35,80,.1);
+  padding: 8px 8px calc(8px + var(--dock-pad));
+  display: flex; flex-direction: column; gap: 5px;
+  flex: 0 0 auto; min-height: 0;
+}
+
+.tool-row { display: flex; gap: 6px; justify-content: center; }
+.tool {
+  flex: 1 1 0; min-width: 0; max-width: 108px;
+  height: clamp(52px, 8.5vh, 62px); border-radius: 18px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  background: #fff; overflow: hidden;
+}
+.tool span { font-size: clamp(21px, 6vw, 26px); line-height: 1; }
+.tool i { font-style: normal; font-size: 11px; font-weight: 800; opacity: .6; }
+/* save / clean sit with the tools but stay compact */
+.tool.util { flex: 0 0 clamp(46px, 13vw, 62px); background: #F3F5FA; }
+.tool.util span { font-size: clamp(19px, 5vw, 23px); }
+@media (max-width: 400px) { .tool i { display: none; } }
+.tool.on { background: linear-gradient(180deg,#FFE066,#FFB703); }
+.tool.on i { opacity: .8; }
+
+.opt-row {
+  display: flex; gap: 7px; align-items: center; overflow-x: auto; padding: 2px 4px;
+  scrollbar-width: none; min-height: clamp(44px, 7vh, 52px);
+}
+.opt-row::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 auto; border: none; font: inherit; cursor: pointer;
+  height: clamp(40px, 6.5vh, 46px); min-width: clamp(40px, 6.5vh, 46px);
+  padding: 0 10px; border-radius: 14px;
+  background: #fff; font-size: 22px; font-weight: 800;
+  box-shadow: 0 3px 0 rgba(42,35,80,.13);
+  display: grid; place-items: center;
+}
+.chip.on { background: linear-gradient(180deg,#FFE066,#FFB703); box-shadow: 0 3px 0 rgba(150,100,0,.28); }
+.chip:active { transform: translateY(3px); box-shadow: none; }
+.chip .sw { width: 26px; height: 26px; border-radius: 8px; display: block; border: 2px solid rgba(0,0,0,.12); }
+.chip .dotsize { background: currentColor; border-radius: 50%; display: block; }
+
+.palette {
+  display: flex; gap: 9px; overflow-x: auto; padding: 4px 4px 6px;
+  scrollbar-width: none; scroll-snap-type: x proximity;
+}
+.palette::-webkit-scrollbar { display: none; }
+.swatch {
+  flex: 0 0 auto; width: clamp(42px, 7vh, 52px); height: clamp(42px, 7vh, 52px); border-radius: 50%;
+  border: 4px solid #fff; cursor: pointer; padding: 0;
+  box-shadow: 0 3px 0 rgba(42,35,80,.16), 0 5px 12px rgba(42,35,80,.14);
+  scroll-snap-align: center;
+  transition: transform .12s;
+}
+.swatch.on { transform: scale(1.16); border-color: #2A2350; }
+.swatch:active { transform: scale(.92); }
+.swatch.rainbow { background: conic-gradient(#FF3B6B,#FF9F1C,#FFE600,#2ECC71,#26C6FF,#9B5DE5,#FF3B6B); }
+
+/* Landscape / short screens: the dock moves to a right-hand rail so the
+   sheet keeps the height it has. Selector must beat `.screen.is-active`. */
+@media (orientation: landscape) and (min-width: 560px) {
+  .screen.studio {
+    display: grid;
+    grid-template-columns: 1fr clamp(200px, 30vw, 320px);
+    grid-template-rows: auto 1fr;
+    align-content: stretch;
+  }
+  .studio-top { grid-column: 1 / -1; grid-row: 1; }
+  .stage { grid-column: 1; grid-row: 2; }
+  .dock {
+    grid-column: 2; grid-row: 2;
+    border-radius: 24px 0 0 24px;
+    margin: 0 0 6px; overflow-y: auto; min-height: 0;
+  }
+  .tool-row { flex-wrap: wrap; }
+  .tool { flex: 1 1 40%; max-width: none; }
+  .tool.util { flex: 1 1 40%; }
+  .opt-row { flex-wrap: wrap; overflow: visible; min-height: 0; }
+  .palette { flex-wrap: wrap; overflow: visible; justify-content: center; gap: 7px; }
+  .palette .swatch { width: clamp(36px, 4.6vw, 46px); height: clamp(36px, 4.6vw, 46px); border-width: 3px; }
+  .chip { height: clamp(38px, 5vw, 46px); min-width: clamp(38px, 5vw, 46px); }
+}
+/* very short landscape phones: trim the chrome further */
+@media (orientation: landscape) and (max-height: 440px) {
+  .studio-top { padding-top: calc(env(safe-area-inset-top, 0px) + 6px); padding-bottom: 4px; }
+  .tool { height: 46px; }
+  .tool i { display: none; }
+}
+
+/* ---------------- fx + modal ---------------- */
+#fx { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
+
+#modal-layer { position: fixed; inset: 0; z-index: 80; display: none; }
+#modal-layer.on { display: grid; place-items: center; background: rgba(42,35,80,.42); backdrop-filter: blur(3px); }
+.modal {
+  background: #fff; border-radius: var(--r-lg); padding: clamp(16px, 3vh, 26px) 20px;
+  width: min(420px, 90vw); text-align: center;
+  max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0,0,0,.3);
+  animation: pop-in .3s cubic-bezier(.2,1.4,.5,1);
+}
+.modal h3 { margin: 0 0 6px; font-size: clamp(21px, 5.5vw, 27px); font-weight: 900; }
+.modal p { margin: 0 0 14px; opacity: .66; font-weight: 700; font-size: clamp(14px, 3.8vw, 16px); }
+.modal .big-emoji { font-size: clamp(40px, 9vh, 62px); line-height: 1; display: block; margin-bottom: 4px; }
+.modal-actions { display: flex; flex-direction: column; gap: 10px; }
+.modal-actions button {
+  border: none; font: inherit; cursor: pointer;
+  height: clamp(46px, 7.5vh, 58px); border-radius: 16px;
+  font-size: clamp(15px, 4vw, 18px); font-weight: 900;
+  background: #F1F3F9; color: var(--ink);
+  box-shadow: 0 4px 0 rgba(42,35,80,.13);
+}
+.modal-actions button.primary { background: linear-gradient(180deg,#FFE066,#FFB703); color: #5A3B00; }
+.modal-actions button.danger { background: linear-gradient(180deg,#FF8AA8,#FF3B6B); color: #fff; }
+.modal-actions button:active { transform: translateY(4px); box-shadow: none; }
+
+/* short screens: lay the modal buttons out two-up so nothing is cut off */
+@media (max-height: 520px) {
+  .modal .big-emoji { font-size: 34px; margin-bottom: 0; }
+  .modal h3 { font-size: 20px; }
+  .modal p { font-size: 13px; margin-bottom: 10px; }
+  .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .modal-actions button { height: 46px; font-size: 14px; }
+}
+
+.setting-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 12px 4px; font-weight: 800; font-size: 17px;
+}
+.toggle {
+  border: none; cursor: pointer; width: 76px; height: 42px; border-radius: 999px;
+  background: #DDE2EC; position: relative; transition: background .2s; flex: 0 0 auto;
+}
+.toggle::after {
+  content: ""; position: absolute; top: 4px; left: 4px; width: 34px; height: 34px;
+  border-radius: 50%; background: #fff; transition: transform .2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,.22);
+}
+.toggle.on { background: #2ECC71; }
+.toggle.on::after { transform: translateX(34px); }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + var(--dock-pad)); transform: translateX(-50%);
+  background: #2A2350; color: #fff; padding: 14px 24px; border-radius: 999px;
+  font-weight: 800; font-size: 16px; z-index: 90; box-shadow: 0 10px 26px rgba(0,0,0,.28);
+  animation: toast-in .3s cubic-bezier(.2,1.4,.5,1);
+}
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 18px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

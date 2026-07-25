@@ -1,0 +1,6 @@
+.claude/
+.DS_Store
+*.bak
+# the app makes no network calls and has no secrets — keep it that way
+.env
+.env.*

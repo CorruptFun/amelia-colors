@@ -1,0 +1,55 @@
+{
+  "id": "/amelia-colors/",
+  "name": "Amelia Colors",
+  "short_name": "Amelia",
+  "description": "132 illustrated coloring pages — animals, race cars, ABC, numbers and shapes — plus blank paper, paint buckets, glitter brushes and stickers. Works offline and saves everything on the device.",
+  "lang": "en-US",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#FFF4FA",
+  "theme_color": "#FFF4FA",
+  "categories": ["education", "entertainment", "kids", "graphics"],
+  "prefer_related_applications": false,
+  "icons": [
+    { "src": "favicon-16.png", "sizes": "16x16", "type": "image/png" },
+    { "src": "favicon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "favicon.png", "sizes": "64x64", "type": "image/png" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    {
+      "src": "og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Coloring pages for animals, race cars and more"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Draw on blank paper",
+      "short_name": "Draw",
+      "url": "./?go=draw",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Pick a coloring page",
+      "short_name": "Color",
+      "url": "./?go=color",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Art",
+      "short_name": "My Art",
+      "url": "./?go=gallery",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+
+<title>Amelia Colors — a coloring book &amp; drawing studio for little artists</title>
+<meta name="description" content="132 illustrated coloring pages — animals, race cars, ABC, numbers and shapes — plus blank paper, paint buckets, glitter brushes and stickers. Works offline, saves everything on the device, free.">
+<meta name="author" content="Corrupt Solutions LLC">
+<meta name="application-name" content="Amelia Colors">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://corruptfun.github.io/amelia-colors/">
+
+<!-- icons -->
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="mask-icon" href="favicon.png" color="#FF3B6B">
+
+<!-- pwa -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FFF4FA">
+<meta name="color-scheme" content="light">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Amelia Colors">
+<meta name="msapplication-TileColor" content="#FF8FC4">
+<meta name="msapplication-TileImage" content="icon-192.png">
+<meta name="format-detection" content="telephone=no">
+
+<!-- sharing -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Amelia Colors">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://corruptfun.github.io/amelia-colors/">
+<meta property="og:title" content="Amelia Colors — a coloring book & drawing studio for little artists">
+<meta property="og:description" content="132 illustrated coloring pages, blank paper, glitter brushes and stickers. Works offline, saves on the device, free.">
+<meta property="og:image" content="https://corruptfun.github.io/amelia-colors/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Amelia Colors — three coloring pages showing a unicorn, a race car and a butterfly">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Amelia Colors — a coloring book & drawing studio for little artists">
+<meta name="twitter:description" content="132 illustrated coloring pages, blank paper, glitter brushes and stickers. Works offline, free.">
+<meta name="twitter:image" content="https://corruptfun.github.io/amelia-colors/og-image.png">
+<meta name="twitter:image:alt" content="Amelia Colors — three coloring pages showing a unicorn, a race car and a butterfly">
+
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ============ HOME ============ -->
+  <section class="screen is-active" id="screen-home">
+    <div class="home-wrap">
+      <h1 class="logo" aria-label="Amelia Colors">
+        <span>A</span><span>m</span><span>e</span><span>l</span><span>i</span><span>a</span>
+        <em>Colors</em>
+      </h1>
+      <p class="tagline">What do you want to make today?</p>
+
+      <div class="home-grid">
+        <button class="tile tile-draw" data-go="draw">
+          <span class="tile-emoji">🎨</span><span class="tile-label">Draw</span>
+        </button>
+        <button class="tile tile-color" data-go="color">
+          <span class="tile-emoji">🖍️</span><span class="tile-label">Color</span>
+        </button>
+        <button class="tile tile-gallery" data-go="gallery">
+          <span class="tile-emoji">🖼️</span><span class="tile-label">My Art</span>
+          <span class="badge" id="art-count" hidden>0</span>
+        </button>
+        <button class="tile tile-surprise" data-go="surprise">
+          <span class="tile-emoji">🎲</span><span class="tile-label">Surprise!</span>
+        </button>
+      </div>
+
+      <button class="resume-chip" id="resume-chip" hidden>
+        <span>↩️</span> Keep coloring my last picture
+      </button>
+    </div>
+    <button class="corner-btn" id="btn-settings" aria-label="Settings">⚙️</button>
+
+    <!-- Add-to-Home-Screen coach: only ever shown in a browser tab, never once installed -->
+    <div class="a2hs" id="a2hs" hidden>
+      <span class="a2hs-ico">📲</span>
+      <span class="a2hs-txt" id="a2hs-txt">Put Amelia Colors on the home screen</span>
+      <button class="a2hs-add" id="a2hs-add">Add</button>
+      <button class="a2hs-x" id="a2hs-x" aria-label="Not now">✕</button>
+    </div>
+  </section>
+
+  <!-- ============ CATEGORIES ============ -->
+  <section class="screen" id="screen-cats">
+    <header class="topbar">
+      <button class="round-btn" data-back aria-label="Back">⬅️</button>
+      <h2>Pick a Picture</h2>
+      <button class="round-btn" data-go="surprise" aria-label="Surprise">🎲</button>
+    </header>
+    <div class="scroller"><div class="cat-grid" id="cat-grid"></div></div>
+  </section>
+
+  <!-- ============ PAGE PICKER ============ -->
+  <section class="screen" id="screen-pages">
+    <header class="topbar">
+      <button class="round-btn" data-back aria-label="Back">⬅️</button>
+      <h2 id="pages-title">Pages</h2>
+      <button class="round-btn" data-go="surprise" aria-label="Surprise">🎲</button>
+    </header>
+    <div class="scroller"><div class="page-grid" id="page-grid"></div></div>
+  </section>
+
+  <!-- ============ GALLERY ============ -->
+  <section class="screen" id="screen-gallery">
+    <header class="topbar">
+      <button class="round-btn" data-back aria-label="Back">⬅️</button>
+      <h2>My Art</h2>
+      <span class="round-btn ghost">🖼️</span>
+    </header>
+    <div class="scroller"><div class="page-grid" id="gallery-grid"></div></div>
+  </section>
+
+  <!-- ============ STUDIO ============ -->
+  <section class="screen studio" id="screen-studio">
+    <header class="studio-top">
+      <button class="round-btn" id="btn-home" aria-label="Home">🏠</button>
+      <button class="round-btn" id="btn-undo" aria-label="Undo">↩️</button>
+      <button class="round-btn" id="btn-redo" aria-label="Redo">↪️</button>
+      <span class="spacer"></span>
+      <button class="pill-btn" id="btn-done">🎉<span class="done-text"> Done!</span></button>
+    </header>
+
+    <div class="stage" id="stage">
+      <div class="paper">
+        <canvas id="canvas"></canvas>
+        <div class="hint" id="hint" hidden>👆<span>Tap to fill!</span></div>
+      </div>
+    </div>
+
+    <div class="dock">
+      <div class="tool-row" id="tool-row">
+        <button class="tool" data-tool="fill"><span>🪣</span><i>Fill</i></button>
+        <button class="tool" data-tool="brush"><span>🖍️</span><i>Draw</i></button>
+        <button class="tool" data-tool="sticker"><span>😀</span><i>Stickers</i></button>
+        <button class="tool" data-tool="eraser"><span>🧽</span><i>Erase</i></button>
+        <button class="tool util" id="btn-save" aria-label="Save"><span>💾</span><i>Save</i></button>
+        <button class="tool util" id="btn-clear" aria-label="Start over"><span>🧼</span><i>Clean</i></button>
+      </div>
+      <div class="opt-row" id="opt-row"></div>
+      <div class="palette" id="palette"></div>
+    </div>
+  </section>
+
+</div>
+
+<canvas id="fx"></canvas>
+<div id="modal-layer"></div>
+
+<script src="js/art-core.js"></script>
+<script src="js/art-animals.js"></script>
+<script src="js/art-cars.js"></script>
+<script src="js/art-things.js"></script>
+<script src="js/art-learn.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/paint.js"></script>
+<script src="js/app.js"></script>
+<script src="pwa-register.js" defer></script>
+</body>
+</html>

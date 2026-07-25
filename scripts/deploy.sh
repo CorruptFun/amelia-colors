@@ -26,7 +26,22 @@ else
   echo "⚠ sw.js / CACHE_VERSION not found — skipping version bump."
 fi
 
-# 2) Integrate anything pushed since we last pulled, then ship.
+# 2) Stamp every asset URL. GitHub Pages serves assets with max-age=600, so
+#    without this a shipped fix can sit invisible on a device for ten minutes —
+#    and longer once a service worker has the old copy precached. Versioned URLs
+#    simply cannot be stale: a new index.html asks for URLs nothing has cached.
+#    index.html and sw.js must move together or the precache misses.
+sed -i.bak -E "s/\?v=[A-Za-z0-9-]+\"/?v=${STAMP}\"/g" index.html
+sed -i.bak -E "s/const ASSET_VERSION *= *\"[^\"]*\";/const ASSET_VERSION = \"${STAMP}\";/" sw.js
+rm -f index.html.bak sw.js.bak
+STAMPED="$(grep -c "?v=${STAMP}\"" index.html || true)"
+echo "→ stamped ${STAMPED} asset URLs in index.html + sw.js ASSET_VERSION"
+if [ "${STAMPED}" -lt 10 ]; then
+  echo "✗ expected 11 stamped asset URLs, found ${STAMPED} — aborting before a half-versioned deploy."
+  exit 1
+fi
+
+# 3) Integrate anything pushed since we last pulled, then ship.
 git add -A
 if git diff --cached --quiet; then
   echo "Nothing to commit — working tree clean. Aborting."

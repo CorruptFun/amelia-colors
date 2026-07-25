@@ -17,27 +17,34 @@
 */
 
 // 👉 CUSTOMIZE: rename to your app, and bump CACHE_VERSION per deploy (e.g. a build stamp).
-const CACHE_VERSION = "20260725-124840";
+const CACHE_VERSION = "20260725-125159";
 const CACHE_NAME    = `amelia-colors-${CACHE_VERSION}`;
+
+// Asset URLs carry ?v=ASSET_VERSION, rewritten by scripts/deploy.sh in lockstep
+// with index.html. A new build therefore requests URLs that cannot be stale in
+// any HTTP cache — which is what stops a shipped fix sitting invisible for the
+// 10 minutes GitHub Pages puts on max-age.
+const ASSET_VERSION = "20260725-125159";
+const v = (path) => `${path}?v=${ASSET_VERSION}`;
 
 // 👉 CUSTOMIZE: the offline shell, precached at install. Relative paths (resolved against
 // this worker's URL) so a root OR subdirectory deploy both work. List only files that
 // exist — each is added individually below so one 404 can't fail the whole install.
 const PRECACHE = [
-  "./",                 // start_url → index.html
+  "./",                 // start_url → index.html (navigation, kept unversioned)
   "./index.html",
-  "./styles.css",
+  v("./styles.css"),
   "./manifest.json",
-  "./js/art-core.js",
-  "./js/art-animals.js",
-  "./js/art-cars.js",
-  "./js/art-things.js",
-  "./js/art-learn.js",
-  "./js/audio.js",
-  "./js/storage.js",
-  "./js/paint.js",
-  "./js/app.js",
-  "./pwa-register.js",
+  v("./js/art-core.js"),
+  v("./js/art-animals.js"),
+  v("./js/art-cars.js"),
+  v("./js/art-things.js"),
+  v("./js/art-learn.js"),
+  v("./js/audio.js"),
+  v("./js/storage.js"),
+  v("./js/paint.js"),
+  v("./js/app.js"),
+  v("./pwa-register.js"),
   "./favicon.ico",
   "./favicon.png",
   "./favicon-16.png",

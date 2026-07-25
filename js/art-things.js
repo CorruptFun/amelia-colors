@@ -1,7 +1,12 @@
-/* Amelia Colors — vehicles, nature, space, treats and fun stuff */
+/* Amelia Colors — vehicles, nature, space, treats and fun stuff
+   Same house rules as the animals and cars: strict back-to-front order,
+   nothing draws through anything, markings stay inside their host shape. */
 (function (Art) {
   'use strict';
   var S = Art.S, P = Art.Parts;
+  var behind = Art.behind, inside = Art.inside;
+  function mark(shape, parts) { return inside(shape, parts, 2.6); }
+  function fit(parts) { return Art.fit(0.88, 12, 12, parts); }
 
   function wheel(cx, cy, r, spokes) {
     var out = S.c(cx, cy, r) + S.c(cx, cy, r * 0.55) + S.c(cx, cy, r * 0.18), i, a, k = spokes || 6;
@@ -16,503 +21,665 @@
     var out = '', i, a;
     for (i = 0; i < 14; i++) {
       a = (Math.PI * 2 / 14) * i;
-      out += S.l(cx + Math.cos(a) * r * 0.78, cy + Math.sin(a) * r * 0.78,
-        cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+      out += S.l(cx + Math.cos(a) * r * 0.8, cy + Math.sin(a) * r * 0.8,
+        cx + Math.cos(a) * r * 0.98, cy + Math.sin(a) * r * 0.98);
     }
     return out;
+  }
+  // tyres as an occluder, so the chassis line never runs across them
+  function tyreSil(list) {
+    return list.map(function (w) { return S.c(w[0], w[1], w[2]); }).join('');
   }
 
   /* ---------------- Things that go ---------------- */
   var GO = [
-    { id: 'tractor', name: 'Tractor', emoji: '🚜', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M36,124 L36,96 L82,96 L82,70 C82,64 86,60 92,60 L124,60 C130,60 134,64 134,70 L134,96 L172,96 L172,124 Z'),
-        S.p('M90,68 L126,68 L126,90 L90,90 Z'), S.l(108, 68, 108, 90),
-        S.p('M70,96 L70,52 L80,52 L80,96'), S.p('M68,50 L82,50 L82,44 L68,44 Z'),
+    { id: 'tractor', name: 'Tractor', emoji: '🚜', art: function () {
+      var W = [[62, 132, 38], [158, 142, 24]];
+      var t = tyreSil(W);
+      var body = S.p('M36,124 L36,96 L82,96 L82,70 C82,64 86,60 92,60 L124,60 C130,60 134,64 134,70 L134,96 L172,96 L172,124 Z');
+      var pipe = S.p('M70,96 L70,52 L80,52 L80,96 Z');
+      return [fit([
+        behind(t + body, S.hair('M6,180 Q30,172 54,180 T102,180 T150,180 T196,180')),
+        behind(body, S.bold(pipe)) ,
+        S.p('M68,50 L82,50 L82,44 L68,44 Z'),
+        behind(t, body + S.p('M90,68 L126,68 L126,90 L90,90 Z') + S.l(108, 68, 108, 90) +
+          S.r(160, 94, 14, 10, 3) + S.p('M136,100 L166,100')),
         wheel(62, 132, 38, 8), treads(62, 132, 38),
-        wheel(158, 142, 24, 6), treads(158, 142, 24),
-        S.r(160, 94, 14, 10, 3),
-        S.p('M136,100 L166,100'),
-        S.hair('M6,180 Q30,172 54,180 T102,180 T150,180 T196,180')
-      ])
-    ]; } },
+        wheel(158, 142, 24, 6), treads(158, 142, 24)
+      ])];
+    } },
 
-    { id: 'firetruck', name: 'Fire Truck', emoji: '🚒', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M10,132 L10,84 L108,84 L108,132 Z'),
-        S.p('M114,132 L114,92 C114,86 118,82 124,82 L146,82 L166,104 L186,110 C191,112 192,116 192,124 L192,132 Z'),
-        S.p('M124,90 L144,90 L156,104 L124,104 Z'),
-        S.p('M18,92 L100,92 L100,112 L18,112 Z'),
-        S.p('M40,92 L40,112 M62,92 L62,112 M82,92 L82,112'),
-        S.p('M14,72 L104,72 L104,82 L14,82 Z'),
-        S.p('M20,66 L34,66 L34,72 L20,72 Z'), S.p('M84,66 L98,66 L98,72 L84,72 Z'),
-        S.p('M12,62 L106,62 M12,62 L12,56 M106,62 L106,56'),
+    { id: 'firetruck', name: 'Fire Truck', emoji: '🚒', art: function () {
+      var W = [[38, 138, 22], [158, 138, 22]];
+      var t = tyreSil(W);
+      return [fit([
+        behind(t, S.p('M10,132 L10,84 L108,84 L108,132 Z') +
+          S.p('M114,132 L114,92 C114,86 118,82 124,82 L146,82 L166,104 L186,110 C191,112 192,116 192,124 L192,132 Z') +
+          S.p('M124,90 L144,90 L156,104 L124,104 Z') +
+          S.p('M18,92 L100,92 L100,112 L18,112 Z') +
+          S.p('M40,92 L40,112 M62,92 L62,112 M82,92 L82,112') +
+          S.p('M14,72 L104,72 L104,82 L14,82 Z') +
+          S.p('M20,66 L34,66 L34,72 L20,72 Z') + S.p('M84,66 L98,66 L98,72 L84,72 Z') +
+          S.p('M12,62 L106,62 M12,62 L12,56 M106,62 L106,56') +
+          S.r(182, 116, 10, 9, 3)),
         wheel(38, 138, 22), wheel(158, 138, 22),
-        S.r(182, 116, 10, 9, 3),
-        S.p('M4,166 L196,166')
-      ])
-    ]; } },
+        behind(t, S.p('M4,166 L196,166'))
+      ])];
+    } },
 
-    { id: 'train', name: 'Train', emoji: '🚂', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M14,140 L14,88 L84,88 L84,58 C84,52 88,48 94,48 L142,48 C148,48 152,52 152,58 L152,140 Z'),
-        S.p('M94,58 L142,58 L142,86 L94,86 Z'), S.l(118, 58, 118, 86),
-        S.p('M30,60 L54,60 L58,88 L26,88 Z'),
-        S.p('M26,54 L58,54 L58,60 L26,60 Z'),
-        S.c(48, 112, 18),
-        S.p('M14,132 L152,132'),
+    { id: 'train', name: 'Train', emoji: '🚂', art: function () {
+      var W = [[40, 148, 20], [88, 148, 16], [128, 148, 16]];
+      var t = tyreSil(W);
+      var body = S.p('M14,140 L14,88 L84,88 L84,58 C84,52 88,48 94,48 L142,48 C148,48 152,52 152,58 L152,140 Z');
+      var funnel = S.p('M30,60 L54,60 L58,88 L26,88 Z');
+      return [fit([
+        behind(body + t, P.cloud(50, 26, 15) + P.cloud(96, 16, 12) + P.cloud(134, 28, 10)),
+        behind(body, funnel + S.p('M26,54 L58,54 L58,60 L26,60 Z')),
+        behind(t, body +
+          S.p('M94,58 L142,58 L142,86 L94,86 Z') + S.l(118, 58, 118, 86) +
+          S.p('M14,132 L152,132') +
+          S.p('M152,120 L184,120 L184,140 L152,140 Z')),
+        mark(body, S.c(48, 112, 18)),
         wheel(40, 148, 20), wheel(88, 148, 16), wheel(128, 148, 16),
-        S.p('M152,120 L184,120 L184,140 L152,140 Z'),
-        P.cloud(50, 26, 15), P.cloud(96, 16, 12), P.cloud(134, 28, 10),
-        S.p('M4,170 L196,170')
-      ])
-    ]; } },
+        behind(t, S.p('M4,170 L196,170'))
+      ])];
+    } },
 
-    { id: 'airplane', name: 'Airplane', emoji: '✈️', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M22,104 C22,90 40,80 66,78 L150,72 C172,71 186,80 186,92 C186,104 172,113 150,112 L66,110 C40,110 22,118 22,104 Z'),
-        S.p('M62,80 L34,34 L58,34 L100,76'),
-        S.p('M62,108 L44,148 L64,148 L98,112'),
-        S.p('M28,96 L4,72 L18,70 L44,88'),
-        S.c(70, 92, 7), S.c(92, 90, 7), S.c(114, 88, 7), S.c(136, 86, 7),
-        S.p('M168,80 C180,82 186,86 186,92 C186,98 180,102 170,104'),
-        P.cloud(40, 168, 16), P.cloud(150, 160, 14), P.cloud(110, 178, 11)
-      ])
-    ]; } },
+    { id: 'airplane', name: 'Airplane', emoji: '✈️', art: function () {
+      var body = S.p('M22,104 C22,90 40,80 66,78 L150,72 C172,71 186,80 186,92 C186,104 172,113 150,112 L66,110 C40,110 22,118 22,104 Z');
+      var wingUp = S.p('M62,80 L34,34 L58,34 L100,76 Z');
+      var wingDn = S.p('M62,108 L44,148 L64,148 L98,112 Z');
+      var tail = S.p('M28,96 L4,72 L18,70 L44,88 Z');
+      return [fit([
+        behind(body, P.cloud(40, 168, 16) + P.cloud(150, 160, 14) + P.cloud(110, 178, 11)),
+        behind(body, wingUp + wingDn + tail),
+        body,
+        mark(body, S.c(70, 92, 7) + S.c(92, 90, 7) + S.c(114, 88, 7) + S.c(136, 86, 7)),
+        mark(body, S.p('M168,80 C180,82 186,86 186,92 C186,98 180,102 170,104'))
+      ])];
+    } },
 
-    { id: 'boat', name: 'Sail Boat', emoji: '⛵', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M20,132 L180,132 L156,166 L44,166 Z'),
-        S.p('M100,128 L100,20'),
-        S.p('M96,28 L36,124 L96,124 Z'),
-        S.p('M106,44 L162,124 L106,124 Z'),
+    { id: 'boat', name: 'Sail Boat', emoji: '⛵', art: function () {
+      var hull = S.p('M20,132 L180,132 L156,166 L44,166 Z');
+      var sailL = S.p('M96,28 L36,124 L96,124 Z');
+      var sailR = S.p('M106,44 L162,124 L106,124 Z');
+      var mast = S.p('M97,20 L103,20 L103,128 L97,128 Z');
+      return [fit([
+        behind(hull, S.hair('M4,176 Q28,168 52,176 T100,176 T148,176 T196,176') +
+          S.hair('M12,190 Q36,182 60,190 T108,190 T156,190')),
+        behind(hull + sailL + sailR, mast),
+        sailL, sailR,
         S.p('M100,20 L128,26 L100,32 Z'),
-        S.p('M40,140 L160,140'),
-        S.hair('M4,176 Q28,168 52,176 T100,176 T148,176 T196,176'),
-        S.hair('M12,190 Q36,182 60,190 T108,190 T156,190'),
+        hull,
+        mark(hull, S.p('M40,140 L160,140')),
         S.c(160, 40, 16), S.hair('M160,16 L160,4 M180,24 L190,16 M184,40 L196,40')
-      ])
-    ]; } },
+      ])];
+    } },
 
-    { id: 'schoolbus', name: 'School Bus', emoji: '🚌', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M12,132 L12,74 C12,68 16,64 22,64 L150,64 C160,64 168,68 174,78 L186,98 C190,104 192,110 192,118 L192,132 Z'),
-        S.p('M22,76 L46,76 L46,104 L22,104 Z'),
-        S.p('M56,76 L80,76 L80,104 L56,104 Z'),
-        S.p('M90,76 L114,76 L114,104 L90,104 Z'),
-        S.p('M124,76 L148,76 L148,104 L124,104 Z'),
-        S.p('M158,80 L174,80 L184,98 L158,98 Z'),
-        S.p('M12,114 L192,114'),
+    { id: 'schoolbus', name: 'School Bus', emoji: '🚌', art: function () {
+      var W = [[52, 138, 22], [154, 138, 22]];
+      var t = tyreSil(W);
+      var body = S.p('M12,132 L12,74 C12,68 16,64 22,64 L150,64 C160,64 168,68 174,78 L186,98 C190,104 192,110 192,118 L192,132 Z');
+      return [fit([
+        behind(t, body),
+        mark(body, S.p('M22,76 L46,76 L46,104 L22,104 Z') +
+          S.p('M56,76 L80,76 L80,104 L56,104 Z') +
+          S.p('M90,76 L114,76 L114,104 L90,104 Z') +
+          S.p('M124,76 L148,76 L148,104 L124,104 Z') +
+          S.p('M158,80 L174,80 L184,98 L158,98 Z') +
+          S.p('M12,114 L192,114')),
+        behind(t, S.r(180, 100, 10, 9, 3)),
         wheel(52, 138, 22), wheel(154, 138, 22),
-        S.r(180, 100, 10, 9, 3),
-        S.p('M4,166 L196,166')
-      ])
-    ]; } },
+        behind(t, S.p('M4,166 L196,166'))
+      ])];
+    } },
 
-    { id: 'digger', name: 'Digger', emoji: '🚧', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M20,138 L20,104 L96,104 L96,66 C96,60 100,56 106,56 L136,56 C142,56 146,60 146,66 L146,138 Z'),
-        S.p('M104,64 L138,64 L138,90 L104,90 Z'), S.l(121, 64, 121, 90),
-        S.p('M96,96 L40,60 L26,72 L84,110'),
-        S.p('M40,60 L20,26 L34,20 L54,54'),
-        S.p('M20,26 C6,30 2,44 8,54 L34,44 Z'),
-        S.p('M6,54 L12,62 M14,50 L20,58 M22,46 L28,54'),
-        S.p('M16,150 L150,150 L150,168 L16,168 Z'),
-        S.c(34, 159, 12), S.c(132, 159, 12), S.c(83, 159, 9),
-        S.p('M4,182 L196,182')
-      ])
-    ]; } },
+    { id: 'digger', name: 'Digger', emoji: '🚧', art: function () {
+      // rebuilt: tracks, a cab, one clear arm and a bucket. The old
+      // version was a tangle of bars with no readable machine in it.
+      var track = S.p('M22,146 C22,138 28,134 38,134 L162,134 C172,134 178,138 178,146 ' +
+        'C178,158 172,164 162,164 L38,164 C28,164 22,158 22,146 Z');
+      var body = S.p('M46,134 L46,104 L152,104 L152,134 Z');
+      var cab = S.p('M100,104 L100,56 C100,50 104,46 110,46 L146,46 C152,46 156,50 156,56 L156,104 Z');
+      var arm = P.ribbon([[102, 118, 11], [70, 100, 10], [42, 80, 9]]);
+      // an open scoop hanging off the arm — the old one read as a leaf
+      var bucket = S.p('M34,66 C16,74 8,92 18,106 L50,98 C42,88 38,76 44,66 Z');
+      return [fit([
+        behind(body + cab, arm),
+        behind(arm, bucket),
+        mark(bucket, S.p('M22,100 L26,110 M32,97 L36,107 M42,94 L46,104')),
+        behind(cab, body),
+        cab,
+        mark(cab, S.p('M108,56 L148,56 L148,86 L108,86 Z') + S.l(128, 56, 128, 86)),
+        behind(body + cab, track),
+        mark(track, S.c(46, 149, 11) + S.c(100, 149, 11) + S.c(154, 149, 11)),
+        behind(track, S.p('M4,182 L196,182'))
+      ])];
+    } },
 
-    { id: 'rocket', name: 'Rocket', emoji: '🚀', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M100,10 C122,34 134,66 134,102 L134,140 L66,140 L66,102 C66,66 78,34 100,10 Z'),
-        S.c(100, 66, 20), S.c(100, 66, 13),
-        S.p('M66,110 L40,152 L66,140 Z'), S.p('M134,110 L160,152 L134,140 Z'),
-        S.p('M66,140 L134,140 L124,158 L76,158 Z'),
-        S.p('M84,158 C84,182 92,196 100,200 C108,196 116,182 116,158 Z'),
-        S.p('M94,158 C94,176 98,188 100,192 C102,188 106,176 106,158 Z'),
-        P.star(28, 40, 11), P.star(170, 32, 9), P.star(20, 108, 8), P.star(178, 100, 10)
-      ])
-    ]; } }
+    { id: 'rocket', name: 'Rocket', emoji: '🚀', art: function () {
+      var body = S.p('M100,10 C122,34 134,66 134,102 L134,140 L66,140 L66,102 C66,66 78,34 100,10 Z');
+      var finL = S.p('M66,110 L40,152 L66,140 Z'), finR = S.p('M134,110 L160,152 L134,140 Z');
+      var skirt = S.p('M66,140 L134,140 L124,158 L76,158 Z');
+      var flame = S.p('M84,158 C84,182 92,196 100,200 C108,196 116,182 116,158 Z');
+      return [fit([
+        behind(body, finL + finR),
+        body,
+        mark(body, S.c(100, 66, 20) + S.c(100, 66, 13)),
+        behind(skirt, flame),
+        skirt,
+        mark(flame, S.p('M94,160 C94,176 98,188 100,192 C102,188 106,176 106,160')),
+        behind(body + finL + finR, P.star(28, 40, 11) + P.star(170, 32, 9) +
+          P.star(20, 108, 8) + P.star(178, 100, 10))
+      ])];
+    } }
   ];
 
   /* ---------------- Nature ---------------- */
   var NAT = [
-    { id: 'flower', name: 'Flower', emoji: '🌸', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        P.flower(100, 62, 40),
-        S.p('M100,102 L100,178'),
-        S.p('M100,124 C74,110 46,116 34,134 C56,148 84,144 100,132'),
-        S.p('M100,148 C126,134 154,140 166,158 C144,172 116,168 100,156'),
-        S.p('M40,178 L160,178'),
-        S.hair('M60,178 C60,166 66,158 74,154 M140,178 C140,166 134,158 126,154'),
-        S.c(30, 40, 8), S.c(170, 46, 6)
-      ])
-    ]; } },
-
-    { id: 'tree', name: 'Apple Tree', emoji: '🌳', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M84,178 L84,116 C70,120 56,112 56,98 C42,96 34,84 38,70 C30,58 36,42 50,38 C56,22 76,16 90,26 C102,12 126,14 134,30 C152,28 164,44 158,60 C170,70 168,90 154,96 C152,112 136,120 122,114 L122,178 Z'),
-        S.c(72, 62, 10), S.c(112, 48, 10), S.c(140, 74, 10), S.c(94, 86, 10), S.c(128, 100, 9),
-        S.p('M84,140 C96,144 110,144 122,140'),
-        S.p('M30,178 L170,178'),
-        S.c(58, 168, 9), S.c(150, 170, 9),
-        S.hair('M40,178 Q46,168 52,178 M156,178 Q162,168 168,178')
-      ])
-    ]; } },
-
-    { id: 'sun', name: 'Happy Sun', emoji: '☀️', art: function () { return [
-      Art.fit(0.88, 12, 12, [
+    { id: 'flower', name: 'Flower', emoji: '🌸', art: function () {
+      var mid = S.c(100, 62, 17);
+      var petals = (function () {
+        var out = '', i, a, r = 36;
+        for (i = 0; i < 6; i++) {
+          a = (Math.PI / 3) * i - Math.PI / 2;
+          out += S.e(100 + Math.cos(a) * r, 62 + Math.sin(a) * r, 22, 15, a * 180 / Math.PI);
+        }
+        return out;
+      })();
+      var stem = S.p('M96,100 L104,100 L104,178 L96,178 Z');
+      var leafL = S.p('M98,124 C74,110 46,116 34,134 C56,148 84,144 100,132 Z');
+      var leafR = S.p('M100,148 C126,134 154,140 166,158 C144,172 116,168 100,156 Z');
+      return [fit([
+        // each petal is tucked under its neighbour and under the middle,
+        // so the flower does not turn into a lattice
         (function () {
-          var out = '', i, a, r1 = 56, r2 = 88;
-          for (i = 0; i < 12; i++) {
-            a = (Math.PI * 2 / 12) * i;
-            var a1 = a - 0.16, a2 = a + 0.16;
-            out += S.p('M' + Math.round(100 + Math.cos(a1) * r1) + ',' + Math.round(100 + Math.sin(a1) * r1) +
-              ' L' + Math.round(100 + Math.cos(a) * r2) + ',' + Math.round(100 + Math.sin(a) * r2) +
-              ' L' + Math.round(100 + Math.cos(a2) * r1) + ',' + Math.round(100 + Math.sin(a2) * r1) + ' Z');
+          var out = '', i, a, r = 36, list = [];
+          for (i = 0; i < 6; i++) {
+            a = (Math.PI / 3) * i - Math.PI / 2;
+            list.push(S.e(100 + Math.cos(a) * r, 62 + Math.sin(a) * r, 22, 15, a * 180 / Math.PI));
           }
+          for (i = 0; i < 6; i++) out += behind(list.slice(0, i).join('') + mid, list[i]);
           return out;
         })(),
-        S.c(100, 100, 56),
+        mid,
+        behind(stem, leafL + leafR),
+        behind(petals + mid, stem),
+        S.p('M40,178 L160,178'),
+        S.hair('M60,178 C60,166 66,158 74,154 M140,178 C140,166 134,158 126,154'),
+        behind(petals + stem, S.c(30, 40, 8) + S.c(170, 46, 6))
+      ])];
+    } },
+
+    { id: 'tree', name: 'Apple Tree', emoji: '🌳', art: function () {
+      var canopy = S.p('M84,178 L84,116 C70,120 56,112 56,98 C42,96 34,84 38,70 C30,58 36,42 50,38 C56,22 76,16 90,26 C102,12 126,14 134,30 C152,28 164,44 158,60 C170,70 168,90 154,96 C152,112 136,120 122,114 L122,178 Z');
+      return [fit([
+        canopy,
+        mark(canopy, S.c(72, 62, 10) + S.c(112, 48, 10) + S.c(140, 74, 10) +
+          S.c(94, 86, 10) + S.c(128, 100, 9) + S.p('M84,140 C96,144 110,144 122,140')),
+        behind(canopy, S.p('M30,178 L170,178') + S.c(58, 168, 9) + S.c(150, 170, 9) +
+          S.hair('M40,178 Q46,168 52,178 M156,178 Q162,168 168,178'))
+      ])];
+    } },
+
+    { id: 'sun', name: 'Happy Sun', emoji: '☀️', art: function () {
+      var disc = S.c(100, 100, 56);
+      var rays = (function () {
+        var out = '', i, a, r1 = 50, r2 = 88;
+        for (i = 0; i < 12; i++) {
+          a = (Math.PI * 2 / 12) * i;
+          var a1 = a - 0.17, a2 = a + 0.17;
+          out += S.p('M' + Math.round(100 + Math.cos(a1) * r1) + ',' + Math.round(100 + Math.sin(a1) * r1) +
+            ' L' + Math.round(100 + Math.cos(a) * r2) + ',' + Math.round(100 + Math.sin(a) * r2) +
+            ' L' + Math.round(100 + Math.cos(a2) * r1) + ',' + Math.round(100 + Math.sin(a2) * r1) + ' Z');
+        }
+        return out;
+      })();
+      return [fit([
+        behind(disc, rays),
+        disc,
         P.eye(82, 88, 10), P.eye(118, 88, 10),
         P.smile(100, 114, 20),
         S.c(70, 118, 8), S.c(130, 118, 8)
-      ])
-    ]; } },
+      ])];
+    } },
 
-    { id: 'rainbow', name: 'Rainbow', emoji: '🌈', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        (function () {
-          var out = '', i, r;
-          for (i = 0; i < 6; i++) {
-            r = 88 - i * 12;
-            out += S.p('M' + (100 - r) + ',150 A' + r + ',' + r + ' 0 0 1 ' + (100 + r) + ',150');
-          }
-          out += S.p('M88,150 L112,150');
-          return out;
-        })(),
-        P.cloud(38, 146, 22), P.cloud(162, 146, 22),
-        P.star(100, 26, 11), S.c(30, 60, 6), S.c(172, 66, 5),
-        S.p('M4,186 L196,186')
-      ])
-    ]; } },
+    { id: 'rainbow', name: 'Rainbow', emoji: '🌈', art: function () {
+      var cloudL = P.cloud(38, 146, 24), cloudR = P.cloud(162, 146, 24);
+      var arcs = (function () {
+        var out = '', i, r;
+        for (i = 0; i < 6; i++) {
+          r = 88 - i * 12;
+          out += S.p('M' + (100 - r) + ',150 A' + r + ',' + r + ' 0 0 1 ' + (100 + r) + ',150');
+        }
+        return out + S.p('M88,150 L112,150');
+      })();
+      return [fit([
+        behind(cloudL + cloudR, arcs),
+        cloudL, cloudR,
+        behind(arcs + cloudL + cloudR, P.star(100, 26, 11) + S.c(30, 60, 6) + S.c(172, 66, 5)),
+        behind(cloudL + cloudR, S.p('M4,186 L196,186'))
+      ])];
+    } },
 
-    { id: 'mushroom', name: 'Mushroom', emoji: '🍄', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M18,104 C18,64 54,36 100,36 C146,36 182,64 182,104 C182,112 174,116 160,116 L40,116 C26,116 18,112 18,104 Z'),
-        S.c(64, 74, 15), S.c(122, 66, 13), S.c(150, 92, 11), S.c(88, 96, 10), S.c(40, 100, 8),
-        S.p('M70,116 L70,166 C70,176 80,182 100,182 C120,182 130,176 130,166 L130,116 Z'),
+    { id: 'mushroom', name: 'Mushroom', emoji: '🍄', art: function () {
+      var cap = S.p('M18,104 C18,64 54,36 100,36 C146,36 182,64 182,104 C182,112 174,116 160,116 L40,116 C26,116 18,112 18,104 Z');
+      var stem = S.p('M70,112 L130,112 L130,166 C130,176 120,182 100,182 C80,182 70,176 70,166 Z');
+      return [fit([
+        behind(cap, stem),
+        cap,
+        mark(cap, S.c(64, 74, 15) + S.c(122, 66, 13) + S.c(150, 92, 11) +
+          S.c(88, 96, 10) + S.c(40, 100, 8)),
         P.eye(86, 140, 8), P.eye(114, 140, 8), P.smile(100, 156, 10),
-        S.hair('M8,186 Q30,178 52,186 T96,186 T140,186 T192,186')
-      ])
-    ]; } },
+        behind(stem, S.hair('M8,186 Q30,178 52,186 T96,186 T140,186 T192,186'))
+      ])];
+    } },
 
-    { id: 'snowman', name: 'Snowman', emoji: '⛄', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.c(100, 156, 40), S.c(100, 100, 30), S.c(100, 58, 23),
-        S.p('M74,42 L126,42 L126,34 L74,34 Z'), S.p('M82,34 L118,34 L118,8 L82,8 Z'),
-        S.p('M76,74 C86,80 114,80 124,74'),
+    { id: 'snowman', name: 'Snowman', emoji: '⛄', art: function () {
+      var base = S.c(100, 156, 40), mid = S.c(100, 100, 30), head = S.c(100, 58, 23);
+      var brim = S.p('M74,42 L126,42 L126,34 L74,34 Z');
+      var top = S.p('M82,34 L118,34 L118,8 L82,8 Z');
+      var armL = P.ribbon([[76, 96, 4], [50, 84, 3.5], [28, 74, 3]]);
+      var armR = P.ribbon([[124, 96, 4], [150, 84, 3.5], [172, 74, 3]]);
+      return [fit([
+        behind(base + mid + head, armL + armR),
+        S.p('M28,74 L18,66 M28,74 L18,82 M172,74 L182,66 M172,74 L182,82'),
+        behind(mid, base), behind(head, mid),
+        behind(brim, head),
+        behind(top, brim), top,
+        mark(base, S.c(100, 146, 8) + S.c(100, 168, 8)),
+        mark(mid, S.c(100, 92, 7) + S.c(100, 112, 7)),
         P.eye(92, 52, 6), P.eye(108, 52, 6),
-        S.p('M100,58 L120,64 L100,68 Z'),
-        S.dot(90, 66, 2), S.dot(100, 68, 2), S.dot(110, 66, 2),
-        S.c(100, 92, 7), S.c(100, 112, 7), S.c(100, 146, 8), S.c(100, 168, 8),
-        S.p('M70,96 L28,74 M28,74 L18,66 M28,74 L18,82'),
-        S.p('M130,96 L172,74 M172,74 L182,66 M172,74 L182,82'),
-        P.star(24, 24, 7), P.star(178, 30, 6), P.star(16, 130, 6), P.star(186, 140, 7)
-      ])
-    ]; } },
+        S.p('M100,56 L126,63 L100,70 Z'),
+        S.dot(88, 70, 2), S.dot(100, 74, 2), S.dot(112, 70, 2),
+        behind(base + mid + head + armL + armR,
+          P.star(24, 24, 7) + P.star(178, 30, 6) + P.star(16, 130, 6) + P.star(186, 140, 7))
+      ])];
+    } },
 
-    { id: 'raincloud', name: 'Rainy Day', emoji: '🌧️', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        P.cloud(100, 62, 42),
-        S.p('M60,120 C54,132 56,142 64,142 C72,142 74,132 68,120 Z'),
-        S.p('M100,132 C94,144 96,154 104,154 C112,154 114,144 108,132 Z'),
-        S.p('M140,118 C134,130 136,140 144,140 C152,140 154,130 148,118 Z'),
-        S.p('M40,148 C36,156 38,164 44,164 C50,164 52,156 48,148 Z'),
-        S.p('M164,146 C160,154 162,162 168,162 C174,162 176,154 172,146 Z'),
-        S.p('M76,176 C76,166 88,160 100,160 C112,160 124,166 124,176 Z'),
-        S.p('M60,186 L140,186'),
-        S.c(100, 176, 5)
-      ])
-    ]; } },
+    { id: 'raincloud', name: 'Rainy Day', emoji: '🌧️', art: function () {
+      var cloud = P.cloud(100, 56, 42);
+      var puddle = S.e(100, 176, 62, 12);
+      function drop(x, y, s) {
+        return S.p('M' + x + ',' + (y - 14 * s) + ' C' + (x - 8 * s) + ',' + (y - 2 * s) +
+          ' ' + (x - 7 * s) + ',' + (y + 8 * s) + ' ' + x + ',' + (y + 8 * s) +
+          ' C' + (x + 7 * s) + ',' + (y + 8 * s) + ' ' + (x + 8 * s) + ',' + (y - 2 * s) +
+          ' ' + x + ',' + (y - 14 * s) + ' Z');
+      }
+      return [fit([
+        cloud,
+        behind(cloud + puddle, drop(56, 120, 1) + drop(100, 134, 1.1) + drop(144, 118, 1) +
+          drop(38, 152, 0.8) + drop(164, 150, 0.8) + drop(78, 158, 0.7) + drop(122, 160, 0.7)),
+        puddle,
+        mark(puddle, S.hair('M70,178 Q84,172 98,178 T126,178')),
+        S.hair('M8,192 L192,192')
+      ])];
+    } },
 
-    { id: 'castle', name: 'Castle', emoji: '🏰', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M40,180 L40,84 L160,84 L160,180 Z'),
-        S.p('M40,84 L40,72 L52,72 L52,84 M64,84 L64,72 L76,72 L76,84 M124,84 L124,72 L136,72 L136,84 M148,84 L148,72 L160,72 L160,84'),
-        S.p('M14,180 L14,68 L54,68 L54,180'),
-        S.p('M146,180 L146,68 L186,68 L186,180'),
-        S.p('M14,68 L34,26 L54,68 Z'), S.p('M146,68 L166,26 L186,68 Z'),
-        S.p('M78,72 L122,72 L100,30 Z'),
-        S.p('M100,30 L100,14 L128,20 L100,28'),
-        S.p('M34,26 L34,12 L58,17 L34,22'), S.p('M166,26 L166,12 L190,17 L166,22'),
-        S.p('M82,180 L82,130 C82,116 118,116 118,130 L118,180 Z'),
-        S.c(24, 96, 8), S.c(44, 96, 8), S.c(156, 96, 8), S.c(176, 96, 8),
-        S.p('M62,104 L78,104 L78,124 L62,124 Z'), S.p('M122,104 L138,104 L138,124 L122,124 Z'),
-        S.p('M4,180 L196,180')
-      ])
-    ]; } }
+    { id: 'castle', name: 'Castle', emoji: '🏰', art: function () {
+      var keep = S.p('M40,180 L40,84 L160,84 L160,180 Z');
+      var towerL = S.p('M14,180 L14,68 L54,68 L54,180 Z');
+      var towerR = S.p('M146,180 L146,68 L186,68 L186,180 Z');
+      var roofL = S.p('M14,68 L34,26 L54,68 Z'), roofR = S.p('M146,68 L166,26 L186,68 Z');
+      var roofM = S.p('M76,88 L124,88 L100,30 Z');
+      var door = S.p('M82,180 L82,130 C82,116 118,116 118,130 L118,180 Z');
+      return [fit([
+        behind(keep + towerL + towerR, S.p('M4,180 L196,180')),
+        behind(towerL + towerR + door, keep),
+        mark(keep, S.p('M40,96 L40,84 L52,84 L52,96 M64,96 L64,84 L76,84 L76,96 ' +
+          'M124,96 L124,84 L136,84 L136,96 M148,96 L148,84 L160,84 L160,96')),
+        behind(keep, roofM),
+        towerL, towerR,
+        roofL, roofR,
+        behind(roofM, S.p('M100,30 L100,14 L128,20 L100,28')),
+        behind(roofL, S.p('M34,26 L34,12 L58,17 L34,22')),
+        behind(roofR, S.p('M166,26 L166,12 L190,17 L166,22')),
+        door,
+        mark(door, S.c(110, 150, 4)),
+        mark(towerL, S.c(24, 96, 8) + S.c(44, 96, 8)),
+        mark(towerR, S.c(156, 96, 8) + S.c(176, 96, 8)),
+        mark(keep, S.p('M62,104 L78,104 L78,124 L62,124 Z') +
+          S.p('M122,104 L138,104 L138,124 L122,124 Z'))
+      ])];
+    } }
   ];
 
   /* ---------------- Space ---------------- */
   var SPACE = [
-    { id: 'astronaut', name: 'Astronaut', emoji: '👩‍🚀', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.c(100, 60, 36), S.c(100, 60, 26),
-        S.p('M84,52 C88,44 98,40 108,42'),
-        S.p('M66,96 C66,86 78,80 100,80 C122,80 134,86 134,96 L134,146 C134,154 128,158 120,158 L80,158 C72,158 66,154 66,146 Z'),
-        S.p('M56,88 L34,120 C30,128 34,136 42,136 C48,136 52,132 54,126'),
-        S.p('M144,88 L166,120 C170,128 166,136 158,136 C152,136 148,132 146,126'),
-        S.p('M80,158 L80,190 L60,190 L60,196 L96,196 L96,158'),
-        S.p('M120,158 L120,190 L140,190 L140,196 L104,196 L104,158'),
-        S.c(100, 106, 10), S.r(84, 122, 32, 14, 4),
-        P.star(24, 34, 11), P.star(174, 44, 9), P.star(30, 160, 8), P.star(180, 152, 10)
-      ])
-    ]; } },
+    { id: 'astronaut', name: 'Astronaut', emoji: '👩‍🚀', art: function () {
+      var helmet = S.c(100, 60, 36);
+      var torso = S.p('M66,96 C66,86 78,80 100,80 C122,80 134,86 134,96 L134,146 C134,154 128,158 120,158 L80,158 C72,158 66,154 66,146 Z');
+      var armL = P.ribbon([[70, 92, 11], [46, 112, 10], [38, 132, 9]]);
+      var armR = P.ribbon([[130, 92, 11], [154, 112, 10], [162, 132, 9]]);
+      var legL = S.p('M80,158 L80,190 L60,190 L60,196 L96,196 L96,158 Z');
+      var legR = S.p('M120,158 L120,190 L140,190 L140,196 L104,196 L104,158 Z');
+      return [fit([
+        behind(torso + helmet, armL + armR),
+        behind(torso, legL + legR),
+        behind(helmet, torso),
+        helmet,
+        mark(helmet, S.c(100, 60, 26)),
+        mark(S.c(100, 60, 26), S.p('M84,52 C88,44 98,40 108,42')),
+        mark(torso, S.c(100, 106, 10) + S.r(84, 122, 32, 14, 4)),
+        behind(helmet + torso + armL + armR + legL + legR,
+          P.star(24, 34, 11) + P.star(174, 44, 9) + P.star(30, 160, 8) + P.star(180, 152, 10))
+      ])];
+    } },
 
-    { id: 'planet', name: 'Planet', emoji: '🪐', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.c(100, 100, 52),
-        S.e(100, 106, 90, 24, -16),
-        S.c(78, 82, 11), S.c(120, 96, 15), S.c(90, 126, 10), S.c(128, 132, 7),
-        P.star(28, 30, 12), P.star(172, 26, 9), P.star(20, 170, 10), P.star(178, 172, 8),
-        S.c(46, 60, 4), S.c(158, 62, 4), S.c(52, 148, 4), S.c(150, 152, 4)
-      ])
-    ]; } },
+    { id: 'planet', name: 'Planet', emoji: '🪐', art: function () {
+      var globe = S.c(100, 100, 52);
+      var ring = S.e(100, 106, 90, 24, -16);
+      // the far half of the ring passes behind the planet, the near
+      // half in front — a single ellipse straight through reads as a
+      // mistake
+      return [fit([
+        behind(globe, ring),
+        globe,
+        mark(globe, S.c(78, 82, 11) + S.c(120, 96, 15) + S.c(90, 126, 10) + S.c(128, 132, 7)),
+        inside(S.p('M10,106 L190,106 L190,196 L10,196 Z'), ring),
+        behind(globe + ring, P.star(28, 30, 12) + P.star(172, 26, 9) +
+          P.star(20, 170, 10) + P.star(178, 172, 8) +
+          S.c(46, 60, 4) + S.c(158, 62, 4) + S.c(52, 148, 4) + S.c(150, 152, 4))
+      ])];
+    } },
 
-    { id: 'ufo', name: 'Space Ship', emoji: '🛸', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M62,96 C62,68 82,52 100,52 C118,52 138,68 138,96 Z'),
-        S.e(100, 100, 78, 24),
-        S.c(60, 100, 8), S.c(80, 106, 8), S.c(100, 108, 8), S.c(120, 106, 8), S.c(140, 100, 8),
-        S.p('M74,120 L44,190 L156,190 L126,120'),
-        S.hair('M92,132 L92,180 M110,132 L110,180'),
-        P.star(26, 40, 10), P.star(176, 46, 9), P.star(34, 150, 7)
-      ])
-    ]; } },
+    { id: 'ufo', name: 'Space Ship', emoji: '🛸', art: function () {
+      var dome = S.p('M62,96 C62,68 82,52 100,52 C118,52 138,68 138,96 Z');
+      var saucer = S.e(100, 100, 78, 24);
+      var beam = S.p('M74,120 L44,190 L156,190 L126,120 Z');
+      return [fit([
+        behind(saucer, beam),
+        behind(saucer, dome),
+        saucer,
+        mark(saucer, S.c(60, 100, 8) + S.c(80, 106, 8) + S.c(100, 108, 8) +
+          S.c(120, 106, 8) + S.c(140, 100, 8)),
+        mark(beam, S.hair('M92,132 L92,182 M110,132 L110,182')),
+        behind(saucer + dome + beam, P.star(26, 40, 10) + P.star(176, 46, 9) + P.star(34, 150, 7))
+      ])];
+    } },
 
-    { id: 'moon', name: 'Moon & Stars', emoji: '🌙', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M126,20 C88,20 58,50 58,88 C58,126 88,156 126,156 C136,156 146,154 154,150 C124,142 102,118 102,88 C102,58 124,34 154,26 C146,22 136,20 126,20 Z'),
-        S.c(84, 62, 9), S.c(76, 100, 12), S.c(96, 128, 7),
-        P.star(38, 30, 14), P.star(170, 70, 12), P.star(30, 150, 11), P.star(160, 168, 10), P.star(178, 24, 8),
-        S.c(20, 92, 5), S.c(120, 180, 5), S.c(66, 178, 4)
-      ])
-    ]; } }
+    { id: 'moon', name: 'Moon & Stars', emoji: '🌙', art: function () {
+      var moon = S.p('M126,20 C88,20 58,50 58,88 C58,126 88,156 126,156 C136,156 146,154 154,150 C124,142 102,118 102,88 C102,58 124,34 154,26 C146,22 136,20 126,20 Z');
+      return [fit([
+        moon,
+        mark(moon, S.c(84, 62, 9) + S.c(76, 100, 12) + S.c(96, 128, 7)),
+        behind(moon, P.star(38, 30, 14) + P.star(170, 70, 12) + P.star(30, 150, 11) +
+          P.star(160, 168, 10) + P.star(178, 24, 8) +
+          S.c(20, 92, 5) + S.c(120, 180, 5) + S.c(66, 178, 4))
+      ])];
+    } }
   ];
 
   /* ---------------- Treats ---------------- */
   var YUM = [
-    { id: 'icecream', name: 'Ice Cream', emoji: '🍦', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M62,104 L138,104 L100,192 Z'),
-        S.p('M70,122 L118,122 M78,140 L110,140 M86,158 L102,158'),
-        S.p('M84,64 C84,50 116,50 116,64 C130,60 140,74 132,86 C142,92 138,106 124,106 L76,106 C62,106 58,92 68,86 C60,74 70,60 84,64 Z'),
-        S.c(100, 32, 14),
-        S.p('M100,18 C104,10 112,8 118,12'),
-        S.c(74, 88, 5), S.c(96, 80, 5), S.c(122, 86, 5),
-        S.hair('M40,60 L52,54 M160,60 L148,54 M46,110 L58,108 M154,110 L142,108')
-      ])
-    ]; } },
+    { id: 'icecream', name: 'Ice Cream', emoji: '🍦', art: function () {
+      var cone = S.p('M62,104 L138,104 L100,192 Z');
+      var scoop = S.p('M84,64 C84,50 116,50 116,64 C130,60 140,74 132,86 C142,92 138,108 124,108 L76,108 C62,108 58,92 68,86 C60,74 70,60 84,64 Z');
+      var cherry = S.c(100, 40, 14);
+      return [fit([
+        behind(scoop, cone),
+        mark(cone, S.p('M70,122 L118,122 M78,140 L110,140 M86,158 L102,158')),
+        behind(cherry, scoop),
+        mark(scoop, S.c(74, 88, 5) + S.c(96, 80, 5) + S.c(122, 86, 5)),
+        cherry,
+        mark(cherry, S.p('M100,26 C104,18 112,16 118,20')),
+        behind(cone + scoop, S.hair('M40,60 L52,54 M160,60 L148,54 M46,110 L58,108 M154,110 L142,108'))
+      ])];
+    } },
 
-    { id: 'cupcake', name: 'Cupcake', emoji: '🧁', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M52,110 L148,110 L134,186 C132,192 126,194 118,194 L82,194 C74,194 68,192 66,186 Z'),
-        S.p('M64,132 L136,132 M72,158 L128,158'),
-        S.p('M60,110 C46,110 42,94 54,88 C48,74 62,62 76,68 C80,50 112,46 120,64 C138,58 152,74 144,88 C158,96 152,112 138,110 Z'),
-        S.c(100, 34, 13),
-        S.p('M100,21 C104,14 112,12 118,16'),
-        S.c(72, 92, 4), S.c(96, 82, 4), S.c(128, 92, 4), S.c(110, 100, 4),
-        P.star(24, 60, 9), P.star(176, 66, 8)
-      ])
-    ]; } },
+    { id: 'cupcake', name: 'Cupcake', emoji: '🧁', art: function () {
+      var cup = S.p('M52,110 L148,110 L134,186 C132,192 126,194 118,194 L82,194 C74,194 68,192 66,186 Z');
+      var frost = S.p('M60,114 C46,114 42,94 54,88 C48,74 62,62 76,68 C80,50 112,46 120,64 C138,58 152,74 144,88 C158,96 152,114 138,114 Z');
+      var cherry = S.c(100, 42, 13);
+      return [fit([
+        behind(frost, cup),
+        mark(cup, S.p('M64,132 L136,132 M72,158 L128,158')),
+        behind(cherry, frost),
+        mark(frost, S.c(72, 92, 4) + S.c(96, 82, 4) + S.c(128, 92, 4) + S.c(110, 100, 4)),
+        cherry,
+        mark(cherry, S.p('M100,29 C104,22 112,20 118,24')),
+        behind(cup + frost, P.star(24, 60, 9) + P.star(176, 66, 8))
+      ])];
+    } },
 
-    { id: 'donut', name: 'Donut', emoji: '🍩', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.c(100, 104, 76), S.c(100, 104, 28),
-        S.p('M100,28 C58,28 24,62 24,104 C24,112 26,120 28,126 C36,116 44,124 52,116 C60,108 70,120 78,112 C88,102 96,116 106,108 C116,100 124,114 134,106 C144,98 152,110 162,102 C170,96 174,104 176,110 C176,106 176,104 176,104 C176,62 142,28 100,28 Z'),
-        S.p('M60,60 L74,56 M88,44 L96,54 M118,50 L128,42 M140,68 L152,62 M50,84 L64,80 M136,88 L148,84 M92,72 L104,66'),
-        S.p('M40,124 L52,120 M70,132 L82,128 M112,130 L124,126 M144,120 L156,116'),
-        P.star(22, 172, 9), P.star(178, 174, 8)
-      ])
-    ]; } },
+    { id: 'donut', name: 'Donut', emoji: '🍩', art: function () {
+      var ring = S.c(100, 104, 76), hole = S.c(100, 104, 28);
+      var glaze = S.p('M100,28 C58,28 24,62 24,104 C24,112 26,120 28,126 C36,116 44,124 52,116 C60,108 70,120 78,112 C88,102 96,116 106,108 C116,100 124,114 134,106 C144,98 152,110 162,102 C170,96 174,104 176,110 C176,106 176,104 176,104 C176,62 142,28 100,28 Z');
+      return [fit([
+        ring,
+        behind(hole, glaze),
+        hole,
+        // sprinkles only where there is glaze to sit on
+        inside(glaze, behind(hole, S.p('M60,60 L74,56 M88,44 L96,54 M118,50 L128,42 ' +
+          'M140,68 L152,62 M50,84 L64,80 M136,88 L148,84 M92,72 L104,66')), 3),
+        mark(ring, S.p('M40,124 L52,120 M70,132 L82,128 M112,130 L124,126 M144,120 L156,116')),
+        behind(ring, P.star(22, 172, 9) + P.star(178, 174, 8))
+      ])];
+    } },
 
-    { id: 'watermelon', name: 'Watermelon', emoji: '🍉', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M14,60 L186,60 C186,120 148,168 100,168 C52,168 14,120 14,60 Z'),
-        S.p('M28,68 C28,120 60,158 100,158 C140,158 172,120 172,68 Z'),
-        S.dot(70, 86, 5), S.dot(100, 82, 5), S.dot(130, 86, 5),
-        S.dot(58, 112, 5), S.dot(86, 110, 5), S.dot(114, 110, 5), S.dot(142, 112, 5),
-        S.dot(78, 134, 5), S.dot(122, 134, 5), S.dot(100, 146, 5),
-        S.p('M14,60 L186,60'),
-        P.heart(38, 32, 13), P.star(166, 30, 10)
-      ])
-    ]; } },
+    { id: 'watermelon', name: 'Watermelon', emoji: '🍉', art: function () {
+      var slice = S.p('M14,60 L186,60 C186,120 148,168 100,168 C52,168 14,120 14,60 Z');
+      var flesh = S.p('M28,68 C28,120 60,158 100,158 C140,158 172,120 172,68 Z');
+      return [fit([
+        slice,
+        flesh,
+        mark(flesh, S.dot(70, 86, 5) + S.dot(100, 82, 5) + S.dot(130, 86, 5) +
+          S.dot(58, 112, 5) + S.dot(86, 110, 5) + S.dot(114, 110, 5) + S.dot(142, 112, 5) +
+          S.dot(78, 134, 5) + S.dot(122, 134, 5) + S.dot(100, 146, 5)),
+        behind(slice, P.heart(38, 32, 13) + P.star(166, 30, 10))
+      ])];
+    } },
 
-    { id: 'pizza', name: 'Pizza Slice', emoji: '🍕', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M100,14 L178,166 C140,182 60,182 22,166 Z'),
-        S.p('M28,158 C64,172 136,172 172,158 C176,166 178,166 178,166 C140,182 60,182 22,166 Z'),
-        S.c(100, 86, 13), S.c(74, 126, 13), S.c(128, 130, 13), S.c(100, 152, 11), S.c(90, 54, 9),
-        S.hair('M58,146 L66,152 M136,146 L144,152 M100,110 L106,116')
-      ])
-    ]; } },
+    { id: 'pizza', name: 'Pizza Slice', emoji: '🍕', art: function () {
+      var slice = S.p('M100,14 L178,166 C140,182 60,182 22,166 Z');
+      var crust = S.p('M28,158 C64,172 136,172 172,158 C176,166 178,166 178,166 C140,182 60,182 22,166 Z');
+      return [fit([
+        slice,
+        behind(crust, S.c(100, 86, 13) + S.c(74, 126, 13) + S.c(128, 130, 13) +
+          S.c(100, 152, 11) + S.c(90, 54, 9)),
+        crust,
+        mark(slice, S.hair('M58,140 L66,146 M136,140 L144,146 M100,106 L106,112'))
+      ])];
+    } },
 
-    { id: 'apple', name: 'Apple', emoji: '🍎', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M100,52 C86,36 56,36 40,58 C22,82 30,132 52,160 C64,176 80,180 100,168 C120,180 136,176 148,160 C170,132 178,82 160,58 C144,36 114,36 100,52 Z'),
-        S.p('M100,50 L100,20'),
-        S.p('M102,30 C118,10 152,10 158,26 C142,44 114,44 102,30 Z'),
+    { id: 'apple', name: 'Apple', emoji: '🍎', art: function () {
+      var fruit = S.p('M100,52 C86,36 56,36 40,58 C22,82 30,132 52,160 C64,176 80,180 100,168 C120,180 136,176 148,160 C170,132 178,82 160,58 C144,36 114,36 100,52 Z');
+      var stalk = S.p('M97,50 L103,50 L103,20 L97,20 Z');
+      var leaf = S.p('M102,30 C118,10 152,10 158,26 C142,44 114,44 102,30 Z');
+      return [fit([
+        behind(fruit + leaf, stalk),
+        behind(fruit, leaf),
+        fruit,
+        mark(leaf, S.hair('M112,30 C126,24 140,22 150,24')),
         P.eye(74, 96, 9), P.eye(126, 96, 9),
         P.smile(100, 122, 14),
         S.c(64, 126, 7), S.c(136, 126, 7)
-      ])
-    ]; } },
+      ])];
+    } },
 
-    { id: 'lollipop', name: 'Lollipop', emoji: '🍭', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.c(100, 76, 60),
-        (function () {
-          var d = '', i, a, r;
-          for (i = 0; i <= 150; i++) {
-            a = (i / 150) * Math.PI * 6;
-            r = 6 + (i / 150) * 50;
-            d += (i ? ' L' : 'M') + Math.round(100 + Math.cos(a) * r) + ',' + Math.round(76 + Math.sin(a) * r);
-          }
-          return S.p(d);
-        })(),
-        S.r(94, 136, 12, 60, 5),
-        S.p('M100,146 C84,132 62,138 60,152 C74,162 92,158 100,150 Z'),
-        S.p('M100,146 C116,132 138,138 140,152 C126,162 108,158 100,150 Z'),
-        S.c(100, 149, 6),
-        P.star(28, 30, 10), P.star(172, 34, 9)
-      ])
-    ]; } },
+    { id: 'lollipop', name: 'Lollipop', emoji: '🍭', art: function () {
+      var candy = S.c(100, 76, 60);
+      var stick = S.r(94, 136, 12, 60, 5);
+      var bowL = S.p('M100,146 C84,132 62,138 60,152 C74,162 92,158 100,150 Z');
+      var bowR = S.p('M100,146 C116,132 138,138 140,152 C126,162 108,158 100,150 Z');
+      var swirl = (function () {
+        var d = '', i, a, r;
+        for (i = 0; i <= 150; i++) {
+          a = (i / 150) * Math.PI * 6;
+          r = 6 + (i / 150) * 48;
+          d += (i ? ' L' : 'M') + Math.round(100 + Math.cos(a) * r) + ',' + Math.round(76 + Math.sin(a) * r);
+        }
+        return S.p(d);
+      })();
+      return [fit([
+        behind(candy + bowL + bowR, stick),
+        candy,
+        mark(candy, swirl),
+        bowL, bowR, S.c(100, 149, 6),
+        behind(candy, P.star(28, 30, 10) + P.star(172, 34, 9))
+      ])];
+    } },
 
-    { id: 'cake', name: 'Birthday Cake', emoji: '🎂', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M22,190 L22,138 L178,138 L178,190 Z'),
-        S.p('M36,138 L36,100 L164,100 L164,138 Z'),
-        S.p('M36,110 C48,120 60,100 72,110 C84,120 96,100 108,110 C120,120 132,100 144,110 C152,116 158,108 164,110'),
-        S.p('M22,150 C36,160 50,140 64,150 C78,160 92,140 106,150 C120,160 134,140 148,150 C158,157 170,146 178,150'),
-        S.r(64, 66, 10, 34, 3), S.r(95, 60, 10, 40, 3), S.r(126, 66, 10, 34, 3),
+    { id: 'cake', name: 'Birthday Cake', emoji: '🎂', art: function () {
+      var lower = S.p('M22,190 L22,138 L178,138 L178,190 Z');
+      var upper = S.p('M36,138 L36,100 L164,100 L164,138 Z');
+      var candles = S.r(64, 66, 10, 34, 3) + S.r(95, 60, 10, 40, 3) + S.r(126, 66, 10, 34, 3);
+      return [fit([
+        behind(upper, candles),
+        behind(upper, lower),
+        mark(lower, S.p('M22,150 C36,160 50,140 64,150 C78,160 92,140 106,150 C120,160 134,140 148,150 C158,157 170,146 178,150') +
+          S.c(60, 170, 7) + S.c(100, 172, 7) + S.c(140, 170, 7)),
+        upper,
+        mark(upper, S.p('M36,110 C48,120 60,100 72,110 C84,120 96,100 108,110 C120,120 132,100 144,110 C152,116 158,108 164,110')),
         S.p('M69,66 C60,56 66,44 69,40 C72,44 78,56 69,66 Z'),
         S.p('M100,60 C91,50 97,38 100,34 C103,38 109,50 100,60 Z'),
-        S.p('M131,66 C122,56 128,44 131,40 C134,44 140,56 131,66 Z'),
-        S.c(60, 170, 7), S.c(100, 172, 7), S.c(140, 170, 7)
-      ])
-    ]; } }
+        S.p('M131,66 C122,56 128,44 131,40 C134,44 140,56 131,66 Z')
+      ])];
+    } }
   ];
 
   /* ---------------- Fun stuff ---------------- */
   var FUN = [
-    { id: 'crown', name: 'Princess Crown', emoji: '👑', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M26,142 L14,54 L58,90 L100,32 L142,90 L186,54 L174,142 Z'),
-        S.p('M26,142 L174,142 L174,168 L26,168 Z'),
-        S.c(14, 48, 9), S.c(100, 26, 10), S.c(186, 48, 9),
-        P.heart(100, 116, 15),
-        S.c(56, 118, 11), S.c(144, 118, 11),
-        S.c(48, 155, 7), S.c(84, 155, 7), S.c(116, 155, 7), S.c(152, 155, 7),
-        P.star(28, 24, 9), P.star(172, 22, 8)
-      ])
-    ]; } },
+    { id: 'crown', name: 'Princess Crown', emoji: '👑', art: function () {
+      var band = S.p('M26,142 L174,142 L174,168 L26,168 Z');
+      var points = S.p('M26,142 L14,54 L58,90 L100,32 L142,90 L186,54 L174,142 Z');
+      return [fit([
+        behind(points, S.c(14, 48, 9) + S.c(100, 26, 10) + S.c(186, 48, 9)),
+        behind(band, points),
+        band,
+        mark(points, P.heart(100, 116, 15) + S.c(56, 118, 11) + S.c(144, 118, 11)),
+        mark(band, S.c(48, 155, 7) + S.c(84, 155, 7) + S.c(116, 155, 7) + S.c(152, 155, 7)),
+        behind(points + band, P.star(28, 24, 9) + P.star(172, 22, 8))
+      ])];
+    } },
 
-    { id: 'robot', name: 'Robot', emoji: '🤖', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M56,34 L144,34 C150,34 154,38 154,44 L154,92 C154,98 150,102 144,102 L56,102 C50,102 46,98 46,92 L46,44 C46,38 50,34 56,34 Z'),
-        S.c(78, 62, 14), S.c(122, 62, 14), S.dot(78, 62, 6), S.dot(122, 62, 6),
-        S.p('M78,84 L122,84 L122,92 L78,92 Z'), S.l(90, 84, 90, 92), S.l(110, 84, 110, 92),
-        S.p('M100,34 L100,16'), S.c(100, 10, 8),
-        S.p('M60,110 L140,110 C146,110 150,114 150,120 L150,166 C150,172 146,176 140,176 L60,176 C54,176 50,172 50,166 L50,120 C50,114 54,110 60,110 Z'),
-        S.c(100, 132, 14), S.c(74, 158, 8), S.c(100, 158, 8), S.c(126, 158, 8),
-        S.r(20, 116, 24, 14, 5), S.r(156, 116, 24, 14, 5),
-        S.p('M44,123 L50,123 M150,123 L156,123'),
-        S.r(62, 180, 24, 16, 5), S.r(114, 180, 24, 16, 5)
-      ])
-    ]; } },
+    { id: 'robot', name: 'Robot', emoji: '🤖', art: function () {
+      var head = S.p('M56,34 L144,34 C150,34 154,38 154,44 L154,92 C154,98 150,102 144,102 L56,102 C50,102 46,98 46,92 L46,44 C46,38 50,34 56,34 Z');
+      var body = S.p('M60,110 L140,110 C146,110 150,114 150,120 L150,166 C150,172 146,176 140,176 L60,176 C54,176 50,172 50,166 L50,120 C50,114 54,110 60,110 Z');
+      var armL = S.r(18, 116, 34, 14, 5), armR = S.r(148, 116, 34, 14, 5);
+      var feet = S.r(62, 172, 24, 20, 5) + S.r(114, 172, 24, 20, 5);
+      var ant = S.p('M97,34 L103,34 L103,16 L97,16 Z');
+      return [fit([
+        behind(head, ant), S.c(100, 10, 8),
+        head,
+        mark(head, S.c(78, 62, 14) + S.c(122, 62, 14)),
+        S.dot(78, 62, 6), S.dot(122, 62, 6),
+        mark(head, S.p('M78,84 L122,84 L122,92 L78,92 Z') + S.l(90, 84, 90, 92) + S.l(110, 84, 110, 92)),
+        behind(body, armL + armR + feet),
+        body,
+        mark(body, S.c(100, 132, 14) + S.c(74, 158, 8) + S.c(100, 158, 8) + S.c(126, 158, 8))
+      ])];
+    } },
 
-    { id: 'house', name: 'My House', emoji: '🏠', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M32,178 L32,96 L168,96 L168,178 Z'),
-        S.p('M18,100 L100,30 L182,100 Z'),
-        S.p('M128,58 L128,34 L148,34 L148,74'),
-        P.cloud(146, 20, 10),
-        S.p('M84,178 L84,124 C84,116 116,116 116,124 L116,178 Z'),
-        S.c(110, 150, 4),
-        S.p('M46,116 L74,116 L74,142 L46,142 Z'), S.l(60, 116, 60, 142), S.l(46, 129, 74, 129),
-        S.p('M126,116 L154,116 L154,142 L126,142 Z'), S.l(140, 116, 140, 142), S.l(126, 129, 154, 129),
-        S.p('M4,178 L196,178'),
-        S.c(30, 40, 15), P.flower(178, 160, 12), P.flower(18, 160, 12)
-      ])
-    ]; } },
+    { id: 'house', name: 'My House', emoji: '🏠', art: function () {
+      var wall = S.p('M32,178 L32,96 L168,96 L168,178 Z');
+      var roof = S.p('M18,100 L100,30 L182,100 Z');
+      var chimney = S.p('M128,58 L128,34 L148,34 L148,74 Z');
+      var door = S.p('M84,178 L84,124 C84,116 116,116 116,124 L116,178 Z');
+      return [fit([
+        behind(wall + roof, P.cloud(146, 20, 10)),
+        behind(roof, chimney),
+        behind(roof + door, wall),
+        roof,
+        door,
+        mark(door, S.c(110, 150, 4)),
+        mark(wall, S.p('M46,116 L74,116 L74,142 L46,142 Z') + S.l(60, 116, 60, 142) + S.l(46, 129, 74, 129) +
+          S.p('M126,116 L154,116 L154,142 L126,142 Z') + S.l(140, 116, 140, 142) + S.l(126, 129, 154, 129)),
+        behind(wall + roof + door, S.p('M4,178 L196,178') + S.c(30, 40, 15) +
+          P.flower(178, 160, 12) + P.flower(18, 160, 12))
+      ])];
+    } },
 
-    { id: 'balloons', name: 'Balloons', emoji: '🎈', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M60,34 C82,34 96,52 96,72 C96,94 80,110 60,110 C40,110 24,94 24,72 C24,52 38,34 60,34 Z'),
-        S.p('M56,110 L64,110 L60,120 Z'),
-        S.p('M140,20 C162,20 176,38 176,58 C176,80 160,96 140,96 C120,96 104,80 104,58 C104,38 118,20 140,20 Z'),
-        S.p('M136,96 L144,96 L140,106 Z'),
-        S.p('M100,88 C120,88 132,104 132,122 C132,142 118,156 100,156 C82,156 68,142 68,122 C68,104 80,88 100,88 Z'),
-        S.p('M96,156 L104,156 L100,166 Z'),
-        S.p('M60,120 C56,144 66,168 84,184'),
-        S.p('M140,106 C144,130 132,164 110,184'),
-        S.p('M100,166 C98,174 96,180 94,184'),
+    { id: 'balloons', name: 'Balloons', emoji: '🎈', art: function () {
+      var bA = S.p('M60,34 C82,34 96,52 96,72 C96,94 80,110 60,110 C40,110 24,94 24,72 C24,52 38,34 60,34 Z');
+      var bB = S.p('M140,20 C162,20 176,38 176,58 C176,80 160,96 140,96 C120,96 104,80 104,58 C104,38 118,20 140,20 Z');
+      var bC = S.p('M100,88 C120,88 132,104 132,122 C132,142 118,156 100,156 C82,156 68,142 68,122 C68,104 80,88 100,88 Z');
+      var tieA = S.p('M56,110 L64,110 L60,120 Z');
+      var tieB = S.p('M136,96 L144,96 L140,106 Z');
+      var tieC = S.p('M96,156 L104,156 L100,166 Z');
+      var strings = S.p('M60,120 C56,144 66,168 84,184') +
+        S.p('M140,106 C144,130 132,164 110,184') +
+        S.p('M100,166 C98,174 96,180 94,184');
+      return [fit([
+        behind(bA + bB + bC + tieA + tieB + tieC, strings),
         S.p('M78,184 C86,190 106,190 116,184'),
-        P.star(20, 130, 9), P.star(184, 128, 8)
-      ])
-    ]; } },
+        behind(bC + tieC, bA + tieA + bB + tieB),
+        bC, tieC,
+        mark(bA, S.hair('M40,54 C46,46 56,44 64,46')),
+        mark(bB, S.hair('M120,40 C126,32 136,30 144,32')),
+        mark(bC, S.hair('M82,106 C88,98 98,96 106,98')),
+        behind(bA + bB + bC, P.star(20, 130, 9) + P.star(184, 128, 8))
+      ])];
+    } },
 
-    { id: 'present', name: 'Present', emoji: '🎁', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M24,80 L176,80 L176,106 L24,106 Z'),
-        S.p('M34,106 L166,106 L166,182 L34,182 Z'),
-        S.p('M86,80 L86,182 L114,182 L114,80 Z'),
-        S.p('M96,80 C74,80 46,72 46,54 C46,40 62,34 74,42 C86,50 94,64 100,80'),
-        S.p('M104,80 C126,80 154,72 154,54 C154,40 138,34 126,42 C114,50 106,64 100,80'),
-        S.c(100, 62, 8),
-        P.star(20, 42, 10), P.star(180, 40, 9), P.heart(28, 150, 11), P.heart(172, 150, 11)
-      ])
-    ]; } },
+    { id: 'present', name: 'Present', emoji: '🎁', art: function () {
+      var lid = S.p('M24,80 L176,80 L176,106 L24,106 Z');
+      var box = S.p('M34,106 L166,106 L166,182 L34,182 Z');
+      var band = S.p('M86,80 L114,80 L114,182 L86,182 Z');
+      var bowL = S.p('M96,80 C74,80 46,72 46,54 C46,40 62,34 74,42 C86,50 94,64 100,80 Z');
+      var bowR = S.p('M104,80 C126,80 154,72 154,54 C154,40 138,34 126,42 C114,50 106,64 100,80 Z');
+      var knot = S.c(100, 62, 8);
+      return [fit([
+        behind(band, box + lid),
+        band,
+        behind(knot, bowL + bowR),
+        knot,
+        behind(lid + bowL + bowR, P.star(20, 42, 10) + P.star(180, 40, 9) +
+          P.heart(28, 150, 11) + P.heart(172, 150, 11))
+      ])];
+    } },
 
-    { id: 'mermaid', name: 'Mermaid Tail', emoji: '🧜‍♀️', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.p('M100,24 C116,24 126,40 124,64 C122,88 114,108 110,128 C130,144 156,148 172,138 C160,172 128,190 104,180 C101,178 100,174 100,170 C100,174 99,178 96,180 C72,190 40,172 28,138 C44,148 70,144 90,128 C86,108 78,88 76,64 C74,40 84,24 100,24 Z'),
-        S.p('M80,52 C90,58 110,58 120,52'),
-        S.p('M78,80 C88,88 112,88 122,80'),
-        S.p('M84,108 C92,114 108,114 116,108'),
-        S.thinW(S.p('M112,140 C126,152 146,156 162,150'), S.p('M88,140 C74,152 54,156 38,150')),
-        S.c(70, 156, 8), S.c(130, 156, 8),
-        P.star(24, 40, 10), P.star(176, 44, 9), S.c(20, 110, 6), S.c(182, 106, 5)
-      ])
-    ]; } },
+    { id: 'mermaid', name: 'Mermaid Tail', emoji: '🧜‍♀️', art: function () {
+      var tail = P.ribbon([[100, 16, 18], [100, 40, 32], [96, 80, 27], [92, 116, 20], [100, 142, 14]]);
+      var fluke = S.p('M100,136 C120,148 146,152 164,144 C152,174 122,190 102,182 ' +
+        'C101,180 100,177 100,172 C100,177 99,180 98,182 C78,190 48,174 36,144 ' +
+        'C54,152 80,148 100,136 Z');
+      return [fit([
+        behind(tail, fluke),
+        tail,
+        mark(tail, S.p('M74,54 C86,62 114,62 126,54') +
+          S.p('M74,86 C86,94 114,94 126,86') +
+          S.p('M80,116 C90,122 110,122 120,116')),
+        mark(fluke, S.thinW(S.p('M112,150 C124,160 142,164 156,158'),
+          S.p('M88,150 C76,160 58,164 44,158')) +
+          S.c(72, 164, 8) + S.c(128, 164, 8)),
+        behind(tail + fluke, P.star(24, 40, 10) + P.star(176, 44, 9) +
+          S.c(20, 110, 6) + S.c(182, 106, 5))
+      ])];
+    } },
 
-    { id: 'teddy', name: 'Teddy Bear', emoji: '🧸', art: function () { return [
-      Art.fit(0.88, 12, 12, [
-        S.c(62, 46, 20), S.c(138, 46, 20), S.c(62, 46, 10), S.c(138, 46, 10),
-        S.c(100, 74, 42),
+    { id: 'teddy', name: 'Teddy Bear', emoji: '🧸', art: function () {
+      var head = S.c(100, 74, 42);
+      var earL = S.c(62, 46, 20), earR = S.c(138, 46, 20);
+      var body = S.e(100, 148, 40, 40);
+      var armL = S.e(50, 130, 18, 24, 25), armR = S.e(150, 130, 18, 24, -25);
+      var legL = S.e(70, 186, 20, 14), legR = S.e(130, 186, 20, 14);
+      var muzzle = S.e(100, 90, 18, 13);
+      return [fit([
+        behind(body, armL + armR + legL + legR),
+        behind(head, body),
+        mark(body, S.e(100, 152, 24, 26)),
+        behind(head, earL + earR),
+        head,
+        mark(earL, S.c(62, 46, 10)), mark(earR, S.c(138, 46, 10)),
         P.eye(84, 68, 8), P.eye(116, 68, 8),
-        S.e(100, 90, 18, 13), S.e(100, 84, 9, 7), S.dot(100, 84, 5),
+        muzzle,
+        mark(muzzle, S.e(100, 84, 9, 7)), S.dot(100, 84, 5),
         S.p('M100,92 L100,98'), P.smile(92, 98, 8), P.smile(108, 98, 8),
-        S.e(100, 148, 40, 40),
-        S.e(100, 152, 24, 26),
-        S.e(50, 130, 18, 24, 25), S.e(150, 130, 18, 24, -25),
-        S.e(70, 186, 20, 14), S.e(130, 186, 20, 14),
-        P.heart(100, 150, 12)
-      ])
-    ]; } },
+        mark(S.e(100, 152, 24, 26), P.heart(100, 150, 12))
+      ])];
+    } },
 
-    { id: 'shapes', name: 'Shapes', emoji: '🔷', art: function () { return [
-      Art.fit(0.88, 12, 12, [
+    { id: 'shapes', name: 'Shapes', emoji: '🔷', art: function () {
+      return [fit([
         S.c(56, 52, 30),
         S.r(114, 22, 60, 60, 6),
         S.p('M56,102 L88,164 L24,164 Z'),
         S.p('M144,98 L178,132 L144,166 L110,132 Z'),
         P.star(56, 178, 15),
         P.heart(140, 178, 13)
-      ])
-    ]; } }
+      ])];
+    } }
   ];
 
   function reg(list, id, name, emoji, color) {

@@ -2,80 +2,238 @@
 (function (Art) {
   'use strict';
   var S = Art.S, P = Art.Parts;
+  var behind = Art.behind, inside = Art.inside;
+  function mark(shape, parts) { return inside(shape, parts, 2.4); }
 
   // place a 0..100 mini drawing anywhere on the board
   function at(x, y, s, content) {
     return '<g transform="translate(' + x + ',' + y + ') scale(' + s + ')" stroke-width="' +
       (Math.round((3.2 / s) * 100) / 100) + '">' + content + '</g>';
   }
+  // a cluster of circles where each one sits in front of the ones after it
+  function stack(list) {
+    var out = '', seen = '', i, c;
+    for (i = 0; i < list.length; i++) {
+      c = S.c(list[i][0], list[i][1], list[i][2]);
+      out += behind(seen, c);
+      seen += c;
+    }
+    return out;
+  }
 
   /* ------------------------------------------------------------------
      A–Z : big letter pair, a picture, and the word
   ------------------------------------------------------------------ */
-  var ICONS = {
-    A: ['Apple', S.p('M50,26 C42,14 22,14 14,30 C4,50 12,80 26,92 C34,100 44,100 50,94 C56,100 66,100 74,92 C88,80 96,50 86,30 C78,14 58,14 50,26 Z') +
-        S.p('M50,24 L50,8') + S.p('M52,14 C62,2 82,2 86,12 C76,24 58,24 52,14 Z')],
-    B: ['Ball', S.c(50, 54, 42) + S.p('M14,38 C36,28 64,28 86,38') + S.p('M14,70 C36,80 64,80 86,70') + S.p('M50,12 C40,34 40,74 50,96')],
-    C: ['Cat', S.c(50, 56, 36) + S.p('M26,32 L20,4 L46,22 Z') + S.p('M74,32 L80,4 L54,22 Z') +
-        P.eye(38, 50, 8) + P.eye(62, 50, 8) + S.inkP('M44,66 L56,66 L50,74 Z') + P.smile(43, 80, 7) + P.smile(57, 80, 7)],
-    D: ['Dog', S.c(50, 54, 34) + S.e(14, 58, 13, 24, 10) + S.e(86, 58, 13, 24, -10) +
-        S.e(50, 72, 20, 15) + S.e(50, 64, 8, 6) + S.dot(50, 64, 4) + P.eye(38, 46, 7) + P.eye(62, 46, 7)],
-    E: ['Elephant', S.c(58, 48, 34) + S.e(24, 48, 22, 26, -8) + S.p('M74,66 C82,84 78,100 66,100 C60,100 58,94 62,90') + P.eye(66, 38, 6)],
-    F: ['Fish', S.e(46, 54, 38, 30) + S.p('M84,54 L100,32 L96,54 L100,78 Z') + P.eye(26, 46, 7) +
-        S.c(52, 42, 8) + S.c(64, 58, 8) + S.c(46, 68, 8) + S.p('M40,26 L48,10 L60,30')],
-    G: ['Grapes', S.c(50, 20, 13) + S.c(32, 42, 13) + S.c(68, 42, 13) + S.c(50, 46, 13) +
-        S.c(40, 68, 13) + S.c(62, 68, 13) + S.c(50, 90, 12) + S.p('M50,8 L54,-4') + S.p('M54,0 C66,-8 78,-4 82,4')],
-    H: ['House', S.p('M18,96 L18,46 L82,46 L82,96 Z') + S.p('M8,50 L50,10 L92,50 Z') +
-        S.p('M38,96 L38,64 L62,64 L62,96 Z') + S.r(22, 56, 12, 12, 2) + S.r(66, 56, 12, 12, 2)],
-    I: ['Ice Cream', S.p('M28,44 L72,44 L50,98 Z') + S.p('M36,64 L64,64') +
-        S.c(38, 32, 18) + S.c(62, 32, 18) + S.c(50, 16, 15) + S.c(50, 0, 6)],
-    J: ['Jellyfish', S.p('M14,52 C14,26 30,10 50,10 C70,10 86,26 86,52 Z') +
-        P.eye(38, 38, 7) + P.eye(62, 38, 7) +
-        S.p('M22,54 C18,72 26,86 20,98') + S.p('M38,54 C34,74 42,88 36,100') +
-        S.p('M62,54 C66,74 58,88 64,100') + S.p('M78,54 C82,72 74,86 80,98')],
-    K: ['Kite', S.p('M50,2 L92,50 L50,98 L8,50 Z') + S.p('M50,2 L50,98 M8,50 L92,50') +
-        S.p('M50,98 C58,108 42,116 50,126 C58,136 42,144 50,152')],
-    L: ['Leaf', S.p('M50,4 C86,26 90,72 50,98 C10,72 14,26 50,4 Z') + S.p('M50,10 L50,96') +
-        S.hair('M50,32 L28,24 M50,32 L72,24 M50,54 L26,48 M50,54 L74,48 M50,76 L32,72 M50,76 L68,72')],
-    M: ['Moon', S.p('M66,6 C36,6 14,30 14,54 C14,78 36,98 66,98 C74,98 82,96 88,94 C64,86 50,72 50,52 C50,32 64,16 88,10 C82,8 74,6 66,6 Z') +
-        S.c(38, 34, 7) + S.c(30, 60, 9) + S.c(46, 80, 6)],
-    N: ['Nest', S.p('M6,60 C6,44 26,34 50,34 C74,34 94,44 94,60 C94,80 76,92 50,92 C24,92 6,80 6,60 Z') +
-        S.e(34, 44, 15, 12) + S.e(66, 44, 15, 12) + S.e(50, 34, 15, 12) +
-        S.hair('M12,64 L88,60 M14,76 L86,72')],
-    O: ['Owl', S.p('M50,10 C24,10 12,34 12,58 C12,82 28,98 50,98 C72,98 88,82 88,58 C88,34 76,10 50,10 Z') +
+  var ICONS = (function () {
+    var I = {};
+
+    I.A = ['Apple', (function () {
+      var fruit = S.p('M50,30 C42,18 22,18 14,34 C4,54 12,82 26,94 C34,102 44,102 50,96 C56,102 66,102 74,94 C88,82 96,54 86,34 C78,18 58,18 50,30 Z');
+      var stalk = S.p('M47,30 L53,30 L53,8 L47,8 Z');
+      var leaf = S.p('M52,18 C62,6 82,6 86,16 C76,28 58,28 52,18 Z');
+      return behind(fruit + leaf, stalk) + behind(fruit, leaf) + fruit;
+    })()];
+
+    I.B = ['Ball', (function () {
+      var ball = S.c(50, 54, 42);
+      return ball + mark(ball, S.p('M14,38 C36,28 64,28 86,38') +
+        S.p('M14,70 C36,80 64,80 86,70') + S.p('M50,12 C40,34 40,74 50,96'));
+    })()];
+
+    I.C = ['Cat', (function () {
+      var head = S.c(50, 58, 34);
+      var ears = S.p('M26,36 L20,6 L46,24 Z') + S.p('M74,36 L80,6 L54,24 Z');
+      return behind(head, ears) + head + P.eye(38, 52, 8) + P.eye(62, 52, 8) +
+        S.inkP('M44,68 L56,68 L50,76 Z') + P.smile(43, 82, 7) + P.smile(57, 82, 7);
+    })()];
+
+    I.D = ['Dog', (function () {
+      var head = S.c(50, 52, 32);
+      var ears = S.e(15, 56, 13, 24, 10) + S.e(85, 56, 13, 24, -10);
+      var muz = S.e(50, 70, 20, 15);
+      return behind(head, ears) + head + P.eye(38, 44, 7) + P.eye(62, 44, 7) +
+        behind(muz, S.p('M50,58 L50,66')) + muz +
+        mark(muz, S.e(50, 64, 8, 6)) + S.dot(50, 64, 4) + P.smile(50, 74, 7);
+    })()];
+
+    I.E = ['Elephant', (function () {
+      var head = S.c(50, 46, 30);
+      var earL = S.e(18, 44, 16, 21, -8), earR = S.e(82, 44, 16, 21, 8);
+      var trunk = P.ribbon([[50, 70, 12], [53, 88, 9], [46, 100, 6]]);
+      return behind(head, earL + earR) + behind(head, trunk) + head +
+        mark(earL, S.hair('M13,32 C7,42 7,52 13,60')) +
+        mark(earR, S.hair('M87,32 C93,42 93,52 87,60')) +
+        P.eye(38, 40, 7) + P.eye(62, 40, 7);
+    })()];
+
+    I.F = ['Fish', (function () {
+      var body = S.e(44, 54, 34, 28);
+      var tail = S.p('M72,54 L98,30 L94,54 L98,78 Z');
+      var fin = S.p('M36,28 C42,12 54,6 66,10 C58,18 54,26 54,34 Z');
+      return behind(body, tail + fin) + body + P.eye(26, 46, 7) +
+        S.p('M12,62 C18,68 26,70 32,68') +
+        mark(body, S.c(52, 42, 8) + S.c(64, 58, 8) + S.c(44, 70, 8));
+    })()];
+
+    I.G = ['Grapes', (function () {
+      var berries = [[50, 88, 13], [38, 68, 13], [62, 68, 13],
+        [50, 50, 13], [30, 48, 13], [70, 48, 13], [50, 28, 13]];
+      var sil = berries.map(function (b) { return S.c(b[0], b[1], b[2]); }).join('');
+      var stem = S.p('M47,26 L53,26 L53,6 L47,6 Z');
+      var leaf = S.p('M53,12 C64,0 82,2 86,12 C76,22 60,22 53,14 Z');
+      return behind(sil + leaf, stem) + behind(sil, leaf) + stack(berries);
+    })()];
+
+    I.H = ['House', (function () {
+      var wall = S.p('M18,96 L18,46 L82,46 L82,96 Z');
+      var roof = S.p('M6,50 L50,10 L94,50 Z');
+      var door = S.p('M38,96 L38,64 L62,64 L62,96 Z');
+      return behind(roof + door, wall) + roof + door +
+        mark(wall, S.r(22, 56, 13, 13, 2) + S.r(65, 56, 13, 13, 2));
+    })()];
+
+    I.I = ['Ice Cream', (function () {
+      var cone = S.p('M26,44 L74,44 L50,98 Z');
+      var s1 = S.c(36, 34, 18), s2 = S.c(64, 34, 18), s3 = S.c(50, 16, 16);
+      return behind(s1 + s2 + s3, cone) + mark(cone, S.p('M34,62 L66,62')) +
+        behind(s1 + s2, s3) + behind(s2, s1) + s2 + S.c(50, 0, 6);
+    })()];
+
+    I.J = ['Jellyfish', (function () {
+      var dome = S.p('M12,54 C12,26 29,8 50,8 C71,8 88,26 88,54 Z');
+      var arms = S.p('M22,56 C18,74 26,88 20,100') + S.p('M38,56 C34,76 42,90 36,102') +
+        S.p('M62,56 C66,76 58,90 64,102') + S.p('M78,56 C82,74 74,88 80,100');
+      return behind(dome, arms) + dome + P.eye(38, 38, 7) + P.eye(62, 38, 7) +
+        P.smile(50, 50, 8);
+    })()];
+
+    I.K = ['Kite', (function () {
+      var kite = S.p('M50,4 L90,50 L50,96 L10,50 Z');
+      var tail = S.p('M50,96 C58,106 42,114 50,124 C58,134 42,142 50,150');
+      return behind(kite, tail) + kite + mark(kite, S.p('M50,4 L50,96 M10,50 L90,50'));
+    })()];
+
+    I.L = ['Leaf', (function () {
+      var leaf = S.p('M50,4 C86,26 90,72 50,98 C10,72 14,26 50,4 Z');
+      return leaf + mark(leaf, S.p('M50,10 L50,96') +
+        S.hair('M50,32 L28,24 M50,32 L72,24 M50,54 L26,48 M50,54 L74,48 M50,76 L32,72 M50,76 L68,72'));
+    })()];
+
+    I.M = ['Moon', (function () {
+      var moon = S.p('M66,6 C36,6 14,30 14,54 C14,78 36,98 66,98 C74,98 82,96 88,94 C64,86 50,72 50,52 C50,32 64,16 88,10 C82,8 74,6 66,6 Z');
+      return moon + mark(moon, S.c(38, 34, 7) + S.c(30, 60, 9) + S.c(46, 80, 6));
+    })()];
+
+    I.N = ['Nest', (function () {
+      var bowl = S.p('M6,62 C6,46 26,36 50,36 C74,36 94,46 94,62 C94,82 76,94 50,94 C24,94 6,82 6,62 Z');
+      var e1 = S.e(32, 36, 15, 13), e2 = S.e(68, 36, 15, 13), e3 = S.e(50, 24, 15, 13);
+      var eggs = behind(e1 + e2, e3) + behind(e1, e2) + e1;
+      return behind(bowl, eggs) + bowl +
+        mark(bowl, S.hair('M10,58 C34,66 66,66 90,58 M12,74 C36,82 64,82 88,74'));
+    })()];
+
+    I.O = ['Owl', (function () {
+      var body = S.p('M50,10 C24,10 12,34 12,58 C12,82 28,98 50,98 C72,98 88,82 88,58 C88,34 76,10 50,10 Z');
+      var feet = S.p('M28,84 L24,100 M50,88 L50,102 M72,84 L76,100');
+      return behind(body, feet) + body +
         S.c(36, 48, 15) + S.c(64, 48, 15) + P.eye(36, 48, 8) + P.eye(64, 48, 8) +
-        S.p('M50,56 L42,66 L50,74 L58,66 Z') + S.p('M28,80 L24,96 M50,84 L50,98 M72,80 L76,96')],
-    P: ['Pig', S.e(50, 58, 40, 34) + S.p('M22,32 L14,8 L40,22 Z') + S.p('M78,32 L86,8 L60,22 Z') +
-        S.e(50, 70, 18, 14) + S.dot(44, 70, 4) + S.dot(56, 70, 4) + P.eye(34, 44, 7) + P.eye(66, 44, 7)],
-    Q: ['Queen', S.p('M16,84 L6,20 L34,44 L50,4 L66,44 L94,20 L84,84 Z') + S.p('M16,84 L84,84 L84,98 L16,98 Z') +
-        S.c(6, 14, 6) + S.c(50, 0, 6) + S.c(94, 14, 6) + S.c(50, 62, 9) + S.c(30, 64, 7) + S.c(70, 64, 7)],
-    R: ['Rainbow', S.p('M8,86 A42,42 0 0 1 92,86') + S.p('M20,86 A30,30 0 0 1 80,86') +
-        S.p('M32,86 A18,18 0 0 1 68,86') + S.p('M44,86 L56,86') + P.cloud(14, 84, 12) + P.cloud(86, 84, 12)],
-    S: ['Sun', S.c(50, 50, 30) + (function () {
-      var o = '', i, a; for (i = 0; i < 10; i++) { a = (Math.PI * 2 / 10) * i;
-        o += S.l(50 + Math.cos(a) * 34, 50 + Math.sin(a) * 34, 50 + Math.cos(a) * 48, 50 + Math.sin(a) * 48); }
-      return o; })() + P.eye(41, 44, 6) + P.eye(59, 44, 6) + P.smile(50, 58, 11)],
-    T: ['Tree', S.p('M40,98 L40,58 L60,58 L60,98 Z') +
-        S.c(50, 34, 30) + S.c(26, 48, 18) + S.c(74, 48, 18) +
-        S.c(38, 30, 7) + S.c(62, 38, 7) + S.c(50, 54, 6)],
-    U: ['Umbrella', S.p('M4,54 C4,26 24,6 50,6 C76,6 96,26 96,54 C86,44 78,44 72,54 C64,44 54,44 50,54 C44,44 34,44 28,54 C22,44 14,44 4,54 Z') +
-        S.p('M50,54 L50,88 C50,98 38,100 34,92')],
-    V: ['Van', S.p('M8,80 L8,44 C8,38 12,34 18,34 L64,34 C72,34 78,38 82,44 L92,60 C95,64 96,70 96,76 L96,80 Z') +
-        S.p('M16,42 L40,42 L40,60 L16,60 Z') + S.p('M50,42 L66,42 L76,60 L50,60 Z') +
-        S.c(28, 82, 13) + S.c(76, 82, 13) + S.c(28, 82, 5) + S.c(76, 82, 5)],
-    W: ['Whale', S.p('M8,58 C8,36 28,22 54,22 C78,22 92,34 96,50 L100,32 C102,50 100,66 96,74 L88,60 C80,74 62,82 46,82 C24,82 8,72 8,58 Z') +
-        S.p('M10,64 C28,74 74,76 96,64') + P.eye(28, 50, 6) +
-        S.p('M40,22 C38,10 42,2 50,-4 C58,2 62,10 60,22')],
-    X: ['Xylophone', S.p('M10,26 L90,18 L94,42 L14,52 Z') +
-        S.p('M10,26 L14,52 M30,24 L34,50 M50,22 L54,48 M70,20 L74,46') +
-        S.p('M30,64 L74,70 M70,66 C78,64 84,68 84,74 C84,80 76,82 72,76')],
-    Y: ['Yarn', S.c(50, 54, 40) + S.p('M18,32 C40,44 56,64 64,90') + S.p('M32,18 C52,32 72,54 82,74') +
-        S.p('M74,22 C60,44 46,64 26,78') + S.p('M88,44 C74,62 62,76 46,90') +
-        S.p('M50,14 C36,4 22,4 14,12 C22,18 30,20 38,18')],
-    Z: ['Zebra', S.c(50, 54, 34) + S.p('M26,30 L20,6 L44,22 Z') + S.p('M74,30 L80,6 L56,22 Z') +
-        S.p('M32,30 L40,54 M50,20 L50,44 M68,30 L60,54') +
-        P.eye(38, 54, 7) + P.eye(62, 54, 7) + S.e(50, 76, 16, 12) + S.dot(44, 76, 3) + S.dot(56, 76, 3)]
-  };
+        S.p('M50,56 L42,66 L50,74 L58,66 Z');
+    })()];
+
+    I.P = ['Pig', (function () {
+      var head = S.e(50, 58, 38, 33);
+      var ears = S.p('M24,34 L16,10 L42,24 Z') + S.p('M76,34 L84,10 L58,24 Z');
+      var snout = S.e(50, 70, 18, 14);
+      return behind(head, ears) + head + P.eye(34, 46, 7) + P.eye(66, 46, 7) +
+        snout + mark(snout, S.dot(44, 70, 4) + S.dot(56, 70, 4));
+    })()];
+
+    I.Q = ['Queen', (function () {
+      var points = S.p('M16,84 L6,20 L34,44 L50,4 L66,44 L94,20 L84,84 Z');
+      var band = S.p('M16,84 L84,84 L84,98 L16,98 Z');
+      return behind(points, S.c(6, 14, 6) + S.c(50, 0, 6) + S.c(94, 14, 6)) +
+        behind(band, points) + band +
+        mark(points, S.c(50, 62, 9) + S.c(30, 66, 7) + S.c(70, 66, 7));
+    })()];
+
+    I.R = ['Rainbow', (function () {
+      var cl = P.cloud(14, 84, 13), cr = P.cloud(86, 84, 13);
+      var arcs = S.p('M8,86 A42,42 0 0 1 92,86') + S.p('M20,86 A30,30 0 0 1 80,86') +
+        S.p('M32,86 A18,18 0 0 1 68,86') + S.p('M44,86 L56,86');
+      return behind(cl + cr, arcs) + cl + cr;
+    })()];
+
+    I.S = ['Sun', (function () {
+      var disc = S.c(50, 50, 30);
+      var rays = (function () {
+        var o = '', i, a;
+        for (i = 0; i < 10; i++) {
+          a = (Math.PI * 2 / 10) * i;
+          o += S.l(50 + Math.cos(a) * 28, 50 + Math.sin(a) * 28,
+            50 + Math.cos(a) * 48, 50 + Math.sin(a) * 48);
+        }
+        return o;
+      })();
+      return behind(disc, rays) + disc + P.eye(41, 44, 6) + P.eye(59, 44, 6) + P.smile(50, 58, 11);
+    })()];
+
+    I.T = ['Tree', (function () {
+      var top = S.c(50, 34, 26), sideL = S.c(28, 48, 19), sideR = S.c(72, 48, 19);
+      var canopy = top + sideL + sideR;
+      var trunk = S.p('M41,98 L41,60 L59,60 L59,98 Z');
+      return behind(canopy, trunk) + behind(top, sideL + sideR) + top +
+        mark(canopy, S.c(40, 28, 7) + S.c(62, 38, 7) + S.c(34, 54, 6));
+    })()];
+
+    I.U = ['Umbrella', (function () {
+      var canopy = S.p('M4,54 C4,26 24,6 50,6 C76,6 96,26 96,54 C86,44 78,44 72,54 C64,44 54,44 50,54 C44,44 34,44 28,54 C22,44 14,44 4,54 Z');
+      var handle = S.p('M46,50 L54,50 L54,88 C54,100 38,102 32,92 L40,88 C43,93 50,93 50,88 Z');
+      return behind(canopy, handle) + canopy;
+    })()];
+
+    I.V = ['Van', (function () {
+      var body = S.p('M8,80 L8,44 C8,38 12,34 18,34 L64,34 C72,34 78,38 82,44 L92,60 C95,64 96,70 96,76 L96,80 Z');
+      var tyres = S.c(28, 82, 13) + S.c(76, 82, 13);
+      return behind(tyres, body + mark(body, S.p('M16,42 L40,42 L40,60 L16,60 Z') +
+        S.p('M50,42 L66,42 L76,60 L50,60 Z'))) +
+        S.c(28, 82, 13) + S.c(76, 82, 13) + S.c(28, 82, 5) + S.c(76, 82, 5);
+    })()];
+
+    I.W = ['Whale', (function () {
+      var body = S.p('M6,60 C6,38 26,24 52,24 C76,24 90,36 92,54 C92,70 84,80 70,84 C58,87 46,86 40,84 C20,82 6,74 6,60 Z');
+      var tail = S.p('M86,42 C92,32 98,26 102,26 C102,36 98,46 92,52 C98,58 102,68 102,80 C96,76 90,66 86,56 Z');
+      var stem = P.ribbon([[42, 26, 5], [38, 14, 4], [36, 4, 2.5]]);
+      var puff = P.cloud(36, -2, 8);
+      return behind(body + puff, stem) + behind(body, tail) + puff + body +
+        mark(body, S.p('M10,66 C28,76 60,80 80,72')) + P.eye(26, 52, 6);
+    })()];
+
+    I.X = ['Xylophone', (function () {
+      var frame = S.p('M8,28 L88,18 L94,50 L14,60 Z');
+      var mallet = S.p('M28,66 L74,72') + S.p('M70,68 C78,66 84,70 84,76 C84,82 76,84 72,78');
+      return frame + mark(frame, S.p('M28,25 L33,56 M48,23 L53,54 M68,20 L73,52')) + mallet;
+    })()];
+
+    I.Y = ['Yarn', (function () {
+      var ball = S.c(50, 54, 38);
+      var loose = S.p('M50,16 C36,6 22,6 14,14 C22,20 30,22 38,20');
+      return behind(ball, loose) + ball +
+        mark(ball, S.p('M20,32 C40,44 54,62 62,86') + S.p('M34,20 C52,34 70,54 80,72') +
+          S.p('M72,24 C58,44 46,62 28,76') + S.p('M84,46 C72,62 60,74 46,88'));
+    })()];
+
+    I.Z = ['Zebra', (function () {
+      var head = S.p('M50,20 C34,20 26,32 26,48 L28,68 C30,84 38,94 50,94 C62,94 70,84 72,68 L74,48 C74,32 66,20 50,20 Z');
+      var ears = S.p('M32,26 L26,4 L46,20 Z') + S.p('M68,26 L74,4 L54,20 Z');
+      var muz = S.e(50, 80, 15, 12);
+      return behind(head, ears) + head +
+        mark(head, S.p('M36,24 L42,46 M50,18 L50,42 M64,24 L58,46 M27,58 L40,62 M73,58 L60,62')) +
+        P.eye(39, 52, 7) + P.eye(61, 52, 7) +
+        muz + mark(muz, S.dot(44, 80, 3) + S.dot(56, 80, 3));
+    })()];
+
+    return I;
+  })();
 
   var ABC = Object.keys(ICONS).map(function (ch) {
     var word = ICONS[ch][0], icon = ICONS[ch][1];
@@ -84,12 +242,14 @@
       name: ch + ' — ' + word,
       short: ch,
       emoji: ch,
+      // the letters own the top band and the picture the middle — they
+      // used to overlap, which made both harder to read
       art: function () {
         return [
-          S.glyph(ch, 72, 44, 56),
-          S.glyph(ch.toLowerCase(), 126, 48, 44),
-          at(54, 62, 0.9, icon),
-          S.glyph(word.toUpperCase(), 100, 174, word.length > 8 ? 16 : 21)
+          S.glyph(ch, 74, 38, 46),
+          S.glyph(ch.toLowerCase(), 126, 41, 36),
+          at(52, 70, 0.92, icon),
+          S.glyph(word.toUpperCase(), 100, 182, word.length > 8 ? 16 : 21)
         ];
       }
     };

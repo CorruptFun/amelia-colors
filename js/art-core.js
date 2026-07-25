@@ -75,6 +75,71 @@
   S.thinW = weight('thin');
   S.hairW = weight('hair');
 
+  /* ---- occlusion -------------------------------------------------
+     THE rule that separates line art from a tangle of overlapping
+     outlines: a shape that sits *behind* another must not draw through
+     it. Everything here is stroke-only (so the paint layer shows
+     through), which means we cannot hide a back shape by filling the
+     front one white — that would block colouring. Instead we mask the
+     back shape with the front shape's silhouette, so its stroke is
+     erased exactly where the front shape covers it.
+
+       behind(silhouette, parts)        parts are cut away inside `silhouette`
+       behind(silhouette, parts, grow)  erase `grow` units past the edge too
+
+     The cut lands on the front outline's centre line, so the front
+     stroke (drawn afterwards) covers the join — the same way a real
+     coloring book reads. */
+  var maskSeq = 0;
+
+  function flatten(x) {
+    if (x == null) return '';
+    if (typeof x === 'string') return x;
+    return x.map(flatten).join('');
+  }
+
+  // turn stroked primitives into a solid black stencil for a <mask>
+  function stencil(str, grow) {
+    var g = grow ? ' stroke="#000" stroke-width="' + n(grow * 2) +
+      '" stroke-linejoin="round" stroke-linecap="round"' : ' stroke="none"';
+    return flatten(str).replace(/<(\w+)([^>]*?)\/>/g, function (m, tag, attrs) {
+      attrs = attrs.replace(/\s*(class|fill|stroke|stroke-width)="[^"]*"/g, '');
+      return '<' + tag + attrs + ' fill="#000"' + g + '/>';
+    });
+  }
+
+  function behind(cover, parts, grow) {
+    var body = flatten(parts);
+    if (!body) return '';
+    var id = 'k' + (++maskSeq);
+    return '<mask id="' + id + '" maskUnits="userSpaceOnUse" x="-60" y="-60" width="320" height="320">' +
+      '<rect x="-60" y="-60" width="320" height="320" fill="#fff"/>' +
+      stencil(cover, grow) +
+      '</mask><g mask="url(#' + id + ')">' + body + '</g>';
+  }
+
+  /* The opposite of behind(): keep only the part of `parts` that falls
+     inside `shape`. This is what markings want — spots, stripes, shell
+     segments and bellies belong to their host shape and must not spill
+     over its contour. `trim` pulls the edge in so a marking cannot
+     merge with the outline it sits inside. */
+  function inside(shape, parts, trim) {
+    var body = flatten(parts);
+    if (!body) return '';
+    var id = 'i' + (++maskSeq);
+    // white = keep. A black ring straddling the contour eats `trim`
+    // units back in from the edge.
+    var keep = stencil(shape).replace(/fill="#000"/g, 'fill="#fff"');
+    var edge = trim ? stencil(shape, trim).replace(/ fill="#000"/g, ' fill="none"') : '';
+    return '<mask id="' + id + '" maskUnits="userSpaceOnUse" x="-60" y="-60" width="320" height="320">' +
+      '<rect x="-60" y="-60" width="320" height="320" fill="#000"/>' +
+      keep + edge +
+      '</mask><g mask="url(#' + id + ')">' + body + '</g>';
+  }
+
+  /* A closed silhouette used only as an occluder — never drawn. */
+  function sil(d) { return '<path d="' + d + '"/>'; }
+
   // ---- reusable sub-parts ----------------------------------------
   var Parts = {
     eye: function (cx, cy, r) {
@@ -149,6 +214,36 @@
         S.p('M' + n(cx + rx * 0.62) + ',' + n(cy + ry * 0.1) + ' Q' + n(cx + rx * 0.3) + ',' + n(cy + ry * 0.66) + ' ' + n(cx) + ',' + n(cy + ry * 0.12));
     }
   };
+
+  /* Build a closed outline around a spine — the reliable way to draw a
+     tapering organic limb (a seahorse body, a tail, a neck) as one
+     clean contour instead of a stack of overlapping blobs.
+     pts: [[x, y, halfWidth], …] */
+  Parts.ribbon = function (pts) {
+    var L = [], R = [], i, p, prev, next, dx, dy, len, nx, ny;
+    for (i = 0; i < pts.length; i++) {
+      p = pts[i];
+      prev = pts[Math.max(i - 1, 0)];
+      next = pts[Math.min(i + 1, pts.length - 1)];
+      dx = next[0] - prev[0]; dy = next[1] - prev[1];
+      len = Math.sqrt(dx * dx + dy * dy) || 1;
+      nx = -dy / len; ny = dx / len;
+      L.push([p[0] + nx * p[2], p[1] + ny * p[2]]);
+      R.push([p[0] - nx * p[2], p[1] - ny * p[2]]);
+    }
+    R.reverse();
+    return S.p(smoothPath(L.concat(R)) + ' Z');
+  };
+
+  // polyline → rounded path (midpoints as anchors, vertices as controls)
+  function smoothPath(p) {
+    var d = 'M' + n(p[0][0]) + ',' + n(p[0][1]), i;
+    for (i = 1; i < p.length - 1; i++) {
+      d += ' Q' + n(p[i][0]) + ',' + n(p[i][1]) + ' ' +
+        n((p[i][0] + p[i + 1][0]) / 2) + ',' + n((p[i][1] + p[i + 1][1]) / 2);
+    }
+    return d + ' L' + n(p[p.length - 1][0]) + ',' + n(p[p.length - 1][1]);
+  }
 
   /* ---- scene furniture ------------------------------------------
      A page border plus a little world around the character is most of
@@ -287,6 +382,7 @@
 
   global.Art = {
     S: S, Parts: Parts, Scene: Scene, VB: VB, fit: fit,
+    behind: behind, inside: inside, sil: sil,
     toSVG: toSVG, toDataURL: toDataURL, drawPage: drawPage,
     pages: {},        // id -> page
     categories: []    // ordered category descriptors

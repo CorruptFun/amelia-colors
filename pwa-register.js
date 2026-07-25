@@ -32,7 +32,7 @@
 
   /* "New version ready" toast — pure DOM (works before any app UI is up), fixed bottom,
      ≥44px tap target, safe-area aware, guarded against duplicates. onRefresh applies the
-     waiting worker + reloads.  /* CUSTOMIZE */ the label text, colors, and font below. */
+     waiting worker + reloads.  CUSTOMIZE the label text, colors, and font below. */
   function showUpdateToast(onRefresh) {
     if (document.getElementById("pwa-update-toast")) return;
     var bar = document.createElement("div");

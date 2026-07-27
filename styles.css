@@ -96,6 +96,7 @@ body::before {
   gap: clamp(8px, 2.2vh, 26px); padding: 16px;
   min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
 }
+.home-wrap > * { flex: 0 0 auto; }
 .logo {
   margin: 0; font-size: clamp(38px, 9vw, 74px); font-weight: 900;
   letter-spacing: -1px; line-height: .95; text-align: center;
@@ -176,6 +177,7 @@ body::before {
 .topbar {
   display: flex; align-items: center; gap: 12px;
   padding: 12px 14px;
+  flex: 0 0 auto;            /* never squashed by the scroller below it */
 }
 .topbar h2 { flex: 1; margin: 0; text-align: center; font-size: clamp(19px, 5vw, 27px); font-weight: 900; }
 
@@ -230,6 +232,7 @@ body::before {
   display: flex; align-items: center; gap: 8px;
   padding: 10px 12px 6px;
   padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
+  flex: 0 0 auto;            /* keeps its height when the stage is greedy */
 }
 .studio-top .spacer { flex: 1; min-width: 4px; }
 .studio-top .round-btn, .studio-top .pill-btn { flex: 0 0 auto; }
@@ -273,6 +276,14 @@ body::before {
   display: flex; flex-direction: column; gap: 5px;
   flex: 0 0 auto; min-height: 0;
 }
+
+/* Flex items default to flex-shrink:1. A row that is squashed below its
+   content height does NOT scroll — with overflow:visible it paints straight
+   over its neighbours. Every child of a bounded flex column therefore has to
+   opt out of shrinking and let the container scroll instead. */
+.dock > .tool-row,
+.dock > .opt-row,
+.dock > .palette { flex: 0 0 auto; }
 
 .tool-row { display: flex; gap: 6px; justify-content: center; }
 .tool {
@@ -347,16 +358,31 @@ body::before {
   .tool-row { flex-wrap: wrap; }
   .tool { flex: 1 1 40%; max-width: none; }
   .tool.util { flex: 1 1 40%; }
-  .opt-row { flex-wrap: wrap; overflow: visible; min-height: 0; }
+  /* the sticker set wraps to many rows here; bound it and let it scroll on its
+     own so the colour palette underneath is never pushed off the rail */
+  .dock > .opt-row {
+    flex: 0 1 auto; flex-wrap: wrap;
+    overflow-x: hidden; overflow-y: auto;
+    max-height: 38vh; min-height: 0;
+  }
   .palette { flex-wrap: wrap; overflow: visible; justify-content: center; gap: 7px; }
   .palette .swatch { width: clamp(36px, 4.6vw, 46px); height: clamp(36px, 4.6vw, 46px); border-width: 3px; }
   .chip { height: clamp(38px, 5vw, 46px); min-width: clamp(38px, 5vw, 46px); }
 }
-/* very short landscape phones: trim the chrome further */
+/* Very short landscape phones: the rail is only ~310px tall, and six wrapped
+   tool buttons were eating half of it — pushing the colour palette below the
+   fold. Colours are the most-used control and must never need a scroll. */
 @media (orientation: landscape) and (max-height: 440px) {
   .studio-top { padding-top: calc(env(safe-area-inset-top, 0px) + 6px); padding-bottom: 4px; }
-  .tool { height: 46px; }
   .tool i { display: none; }
+  .dock > .tool-row { flex-wrap: nowrap; gap: 4px; }
+  .dock > .tool-row .tool,
+  .dock > .tool-row .tool.util { flex: 1 1 0; min-width: 0; max-width: none; height: 44px; }
+  .dock > .tool-row .tool span { font-size: 20px; }
+  .dock > .opt-row { max-height: 27vh; gap: 5px; }
+  .dock > .palette { gap: 6px; }
+  .dock > .palette .swatch { width: 34px; height: 34px; border-width: 3px; }
+  .chip { height: 38px; min-width: 38px; font-size: 19px; }
 }
 
 /* ---------------- fx + modal ---------------- */
@@ -375,6 +401,7 @@ body::before {
 .modal p { margin: 0 0 14px; opacity: .66; font-weight: 700; font-size: clamp(14px, 3.8vw, 16px); }
 .modal .big-emoji { font-size: clamp(40px, 9vh, 62px); line-height: 1; display: block; margin-bottom: 4px; }
 .modal-actions { display: flex; flex-direction: column; gap: 10px; }
+.modal-actions > button { flex: 0 0 auto; }
 .modal-actions button {
   border: none; font: inherit; cursor: pointer;
   height: clamp(46px, 7.5vh, 58px); border-radius: 16px;

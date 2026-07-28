@@ -156,7 +156,18 @@ for (const cat of Art.categories) {
     const coreW = (q(xs, 0.98) - q(xs, 0.02)) * BU;
     const coreH = (q(ys, 0.98) - q(ys, 0.02)) * BU;
 
-    const { enclosed } = regions(ink);
+    /* Region counts must come from the ART only. Rendered word labels enclose
+       one small region per letter counter (the hole in an "o", "e", "R"), so a
+       page captioned XYLOPHONE scored 32 "untappable regions" purely from its
+       own caption — the count tracked word length, not drawing quality.
+       Re-render without <text> and measure the drawing. */
+    const svgNoText = Art.toSVG(String(svgBody).replace(/<text[\s\S]*?<\/text>/g, ''),
+      { size: R, stroke, frame: false });
+    const rawArt = rasterise(svgNoText);
+    const inkArt = new Uint8Array(R * R);
+    for (let i = 0; i < R * R; i++) if (rawArt[i] < 128) inkArt[i] = 1;
+
+    const { enclosed } = regions(inkArt);
     const areas = enclosed.map(r => r.area * BU * BU);
     const tiny = enclosed.filter(r => r.area * BU * BU < 6).length;
     const slivers = enclosed.filter(r => Math.min(r.w, r.h) * BU < 2).length;

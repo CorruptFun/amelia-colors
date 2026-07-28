@@ -7,7 +7,9 @@
   var B = S.bold, TH = S.thinW, HA = S.hairW;
   var behind = Art.behind, inside = Art.inside;
   function mark(shape, parts) { return inside(shape, parts, 2.6); }
-  function fit(parts) { return Art.fit(0.88, 12, 12, parts); }
+  /* Was 0.88/12/12 — a file-wide 12% shrink that left every page in here
+     visibly smaller than an animals page sitting next to it in the picker. */
+  function fit(parts) { return Art.fit(0.97, 3, 3, parts); }
 
   /* A surface for the treats to sit on — the food equivalent of the animals'
      ground(). Always masked by the subject so it never crosses it. */
@@ -58,7 +60,7 @@
         behind(t + body, S.hair('M6,180 Q30,172 54,180 T102,180 T150,180 T196,180')),
         behind(body, S.bold(pipe)) ,
         S.p('M68,50 L82,50 L82,44 L68,44 Z'),
-        behind(t, body + S.p('M90,68 L126,68 L126,90 L90,90 Z') + S.l(108, 68, 108, 90) +
+        behind(t, B(body) + S.p('M90,68 L126,68 L126,90 L90,90 Z') + S.l(108, 68, 108, 90) +
           S.r(160, 94, 14, 10, 3) + S.p('M136,100 L166,100')),
         wheel(62, 132, 38, 8), treads(62, 132, 38),
         wheel(158, 142, 24, 6), treads(158, 142, 24)
@@ -69,8 +71,8 @@
       var W = [[38, 138, 22], [158, 138, 22]];
       var t = tyreSil(W);
       return [fit([
-        behind(t, S.p('M10,132 L10,84 L108,84 L108,132 Z') +
-          S.p('M114,132 L114,92 C114,86 118,82 124,82 L146,82 L166,104 L186,110 C191,112 192,116 192,124 L192,132 Z') +
+        behind(t, B(S.p('M10,132 L10,84 L108,84 L108,132 Z')) +
+          B(S.p('M114,132 L114,92 C114,86 118,82 124,82 L146,82 L166,104 L186,110 C191,112 192,116 192,124 L192,132 Z')) +
           S.p('M124,90 L144,90 L156,104 L124,104 Z') +
           S.p('M18,92 L100,92 L100,112 L18,112 Z') +
           S.p('M40,92 L40,112 M62,92 L62,112 M82,92 L82,112') +
@@ -91,7 +93,7 @@
       return [fit([
         behind(body + t, P.cloud(50, 26, 15) + P.cloud(96, 16, 12) + P.cloud(134, 28, 10)),
         behind(body, funnel + S.p('M26,54 L58,54 L58,60 L26,60 Z')),
-        behind(t, body +
+        behind(t, B(body) +
           S.p('M94,58 L142,58 L142,86 L94,86 Z') + S.l(118, 58, 118, 86) +
           S.p('M14,132 L152,132') +
           S.p('M152,120 L184,120 L184,140 L152,140 Z')),
@@ -108,8 +110,8 @@
       var tail = S.p('M28,96 L4,72 L18,70 L44,88 Z');
       return [fit([
         behind(body, P.cloud(40, 168, 16) + P.cloud(150, 160, 14) + P.cloud(110, 178, 11)),
-        behind(body, wingUp + wingDn + tail),
-        body,
+        behind(body, B(wingUp + wingDn + tail)),
+        B(body),
         mark(body, S.c(70, 92, 7) + S.c(92, 90, 7) + S.c(114, 88, 7) + S.c(136, 86, 7)),
         mark(body, S.p('M168,80 C180,82 186,86 186,92 C186,98 180,102 170,104'))
       ])];
@@ -124,9 +126,9 @@
         behind(hull, S.hair('M4,176 Q28,168 52,176 T100,176 T148,176 T196,176') +
           S.hair('M12,190 Q36,182 60,190 T108,190 T156,190')),
         behind(hull + sailL + sailR, mast),
-        sailL, sailR,
+        B(sailL), B(sailR),
         S.p('M100,20 L128,26 L100,32 Z'),
-        hull,
+        B(hull),
         mark(hull, S.p('M40,140 L160,140')),
         S.c(160, 40, 16), S.hair('M160,16 L160,4 M180,24 L190,16 M184,40 L196,40')
       ])];
@@ -137,7 +139,7 @@
       var t = tyreSil(W);
       var body = S.p('M12,132 L12,74 C12,68 16,64 22,64 L150,64 C160,64 168,68 174,78 L186,98 C190,104 192,110 192,118 L192,132 Z');
       return [fit([
-        behind(t, body),
+        behind(t, B(body)),
         mark(body, S.p('M22,76 L46,76 L46,104 L22,104 Z') +
           S.p('M56,76 L80,76 L80,104 L56,104 Z') +
           S.p('M90,76 L114,76 L114,104 L90,104 Z') +
@@ -164,10 +166,10 @@
         behind(body + cab, arm),
         behind(arm, bucket),
         mark(bucket, S.p('M22,100 L26,110 M32,97 L36,107 M42,94 L46,104')),
-        behind(cab, body),
-        cab,
+        behind(cab, B(body)),
+        B(cab),
         mark(cab, S.p('M108,56 L148,56 L148,86 L108,86 Z') + S.l(128, 56, 128, 86)),
-        behind(body + cab, track),
+        behind(body + cab, B(track)),
         mark(track, S.c(46, 149, 11) + S.c(100, 149, 11) + S.c(154, 149, 11)),
         behind(track, S.p('M4,182 L196,182'))
       ])];
@@ -179,11 +181,11 @@
       var skirt = S.p('M66,140 L134,140 L124,158 L76,158 Z');
       var flame = S.p('M84,158 C84,182 92,196 100,200 C108,196 116,182 116,158 Z');
       return [fit([
-        behind(body, finL + finR),
-        body,
+        behind(body, B(finL + finR)),
+        B(body),
         mark(body, S.c(100, 66, 20) + S.c(100, 66, 13)),
-        behind(skirt, flame),
-        skirt,
+        behind(skirt, B(flame)),
+        B(skirt),
         mark(flame, S.p('M94,160 C94,176 98,188 100,192 C102,188 106,176 106,160')),
         behind(body + finL + finR, P.star(28, 40, 11) + P.star(170, 32, 9) +
           P.star(20, 108, 8) + P.star(178, 100, 10))
@@ -215,10 +217,10 @@
             a = (Math.PI / 3) * i - Math.PI / 2;
             list.push(S.e(100 + Math.cos(a) * r, 62 + Math.sin(a) * r, 22, 15, a * 180 / Math.PI));
           }
-          for (i = 0; i < 6; i++) out += behind(list.slice(0, i).join('') + mid, list[i]);
+          for (i = 0; i < 6; i++) out += behind(list.slice(0, i).join('') + mid, B(list[i]));
           return out;
         })(),
-        mid,
+        B(mid),
         behind(stem, leafL + leafR),
         behind(petals + mid, stem),
         S.p('M40,178 L160,178'),
@@ -230,7 +232,7 @@
     { id: 'tree', name: 'Apple Tree', emoji: '🌳', art: function () {
       var canopy = S.p('M84,178 L84,116 C70,120 56,112 56,98 C42,96 34,84 38,70 C30,58 36,42 50,38 C56,22 76,16 90,26 C102,12 126,14 134,30 C152,28 164,44 158,60 C170,70 168,90 154,96 C152,112 136,120 122,114 L122,178 Z');
       return [fit([
-        canopy,
+        B(canopy),
         mark(canopy, S.c(72, 62, 10) + S.c(112, 48, 10) + S.c(140, 74, 10) +
           S.c(94, 86, 10) + S.c(128, 100, 9) + S.p('M84,140 C96,144 110,144 122,140')),
         behind(canopy, S.p('M30,178 L170,178') + S.c(58, 168, 9) + S.c(150, 170, 9) +
@@ -253,7 +255,7 @@
       })();
       return [fit([
         behind(disc, rays),
-        disc,
+        B(disc),
         P.eye(82, 88, 10), P.eye(118, 88, 10),
         P.smile(100, 114, 20),
         S.c(70, 118, 8), S.c(130, 118, 8)
@@ -266,7 +268,7 @@
         var out = '', i, r;
         for (i = 0; i < 6; i++) {
           r = 88 - i * 12;
-          out += S.p('M' + (100 - r) + ',150 A' + r + ',' + r + ' 0 0 1 ' + (100 + r) + ',150');
+          out += (i ? function (x) { return x; } : B)(S.p('M' + (100 - r) + ',150 A' + r + ',' + r + ' 0 0 1 ' + (100 + r) + ',150'));
         }
         return out + S.p('M88,150 L112,150');
       })();
@@ -282,8 +284,8 @@
       var cap = S.p('M18,104 C18,64 54,36 100,36 C146,36 182,64 182,104 C182,112 174,116 160,116 L40,116 C26,116 18,112 18,104 Z');
       var stem = S.p('M70,112 L130,112 L130,166 C130,176 120,182 100,182 C80,182 70,176 70,166 Z');
       return [fit([
-        behind(cap, stem),
-        cap,
+        behind(cap, B(stem)),
+        B(cap),
         mark(cap, S.c(64, 74, 15) + S.c(122, 66, 13) + S.c(150, 92, 11) +
           S.c(88, 96, 10) + S.c(40, 100, 8)),
         P.eye(86, 140, 8), P.eye(114, 140, 8), P.smile(100, 156, 10),
@@ -300,9 +302,9 @@
       return [fit([
         behind(base + mid + head, armL + armR),
         S.p('M28,74 L18,66 M28,74 L18,82 M172,74 L182,66 M172,74 L182,82'),
-        behind(mid, base), behind(head, mid),
-        behind(brim, head),
-        behind(top, brim), top,
+        behind(mid, B(base)), behind(head, B(mid)),
+        behind(brim, B(head)),
+        behind(top, B(brim)), B(top),
         mark(base, S.c(100, 146, 8) + S.c(100, 168, 8)),
         mark(mid, S.c(100, 92, 7) + S.c(100, 112, 7)),
         P.eye(92, 52, 6), P.eye(108, 52, 6),
@@ -326,7 +328,7 @@
         cloud,
         behind(cloud + puddle, drop(56, 120, 1) + drop(100, 134, 1.1) + drop(144, 118, 1) +
           drop(38, 152, 0.8) + drop(164, 150, 0.8) + drop(78, 158, 0.7) + drop(122, 160, 0.7)),
-        puddle,
+        B(puddle),
         mark(puddle, S.hair('M70,178 Q84,172 98,178 T126,178')),
         S.hair('M8,192 L192,192')
       ])];
@@ -341,16 +343,16 @@
       var door = S.p('M82,180 L82,130 C82,116 118,116 118,130 L118,180 Z');
       return [fit([
         behind(keep + towerL + towerR, S.p('M4,180 L196,180')),
-        behind(towerL + towerR + door, keep),
+        behind(towerL + towerR + door, B(keep)),
         mark(keep, S.p('M40,96 L40,84 L52,84 L52,96 M64,96 L64,84 L76,84 L76,96 ' +
           'M124,96 L124,84 L136,84 L136,96 M148,96 L148,84 L160,84 L160,96')),
         behind(keep, roofM),
-        towerL, towerR,
-        roofL, roofR,
+        B(towerL), B(towerR),
+        B(roofL), B(roofR),
         behind(roofM, S.p('M100,30 L100,14 L128,20 L100,28')),
         behind(roofL, S.p('M34,26 L34,12 L58,17 L34,22')),
         behind(roofR, S.p('M166,26 L166,12 L190,17 L166,22')),
-        door,
+        B(door),
         mark(door, S.c(110, 150, 4)),
         mark(towerL, S.c(24, 96, 8) + S.c(44, 96, 8)),
         mark(towerR, S.c(156, 96, 8) + S.c(176, 96, 8)),
@@ -372,8 +374,8 @@
       return [fit([
         behind(torso + helmet, armL + armR),
         behind(torso, legL + legR),
-        behind(helmet, torso),
-        helmet,
+        behind(helmet, B(torso)),
+        B(helmet),
         mark(helmet, S.c(100, 60, 26)),
         mark(S.c(100, 60, 26), S.p('M84,52 C88,44 98,40 108,42')),
         mark(torso, S.c(100, 106, 10) + S.r(84, 122, 32, 14, 4)),
@@ -389,8 +391,8 @@
       // half in front — a single ellipse straight through reads as a
       // mistake
       return [fit([
-        behind(globe, ring),
-        globe,
+        behind(globe, B(ring)),
+        B(globe),
         mark(globe, S.c(78, 82, 11) + S.c(120, 96, 15) + S.c(90, 126, 10) + S.c(128, 132, 7)),
         inside(S.p('M10,106 L190,106 L190,196 L10,196 Z'), ring),
         behind(globe + ring, P.star(28, 30, 12) + P.star(172, 26, 9) +
@@ -405,8 +407,8 @@
       var beam = S.p('M74,120 L44,190 L156,190 L126,120 Z');
       return [fit([
         behind(saucer, beam),
-        behind(saucer, dome),
-        saucer,
+        behind(saucer, B(dome)),
+        B(saucer),
         mark(saucer, S.c(60, 100, 8) + S.c(80, 106, 8) + S.c(100, 108, 8) +
           S.c(120, 106, 8) + S.c(140, 100, 8)),
         mark(beam, S.hair('M92,132 L92,182 M110,132 L110,182')),
@@ -417,7 +419,7 @@
     { id: 'moon', name: 'Moon & Stars', emoji: '🌙', art: function () {
       var moon = S.p('M126,20 C88,20 58,50 58,88 C58,126 88,156 126,156 C136,156 146,154 154,150 C124,142 102,118 102,88 C102,58 124,34 154,26 C146,22 136,20 126,20 Z');
       return [fit([
-        moon,
+        B(moon),
         mark(moon, S.c(84, 62, 9) + S.c(76, 100, 12) + S.c(96, 128, 7)),
         behind(moon, P.star(38, 30, 14) + P.star(170, 70, 12) + P.star(30, 150, 11) +
           P.star(160, 168, 10) + P.star(178, 24, 8) +
@@ -629,8 +631,8 @@
       var points = S.p('M26,142 L14,54 L58,90 L100,32 L142,90 L186,54 L174,142 Z');
       return [fit([
         behind(points, S.c(14, 48, 9) + S.c(100, 26, 10) + S.c(186, 48, 9)),
-        behind(band, points),
-        band,
+        behind(band, B(points)),
+        B(band),
         mark(points, P.heart(100, 116, 15) + S.c(56, 118, 11) + S.c(144, 118, 11)),
         mark(band, S.c(48, 155, 7) + S.c(84, 155, 7) + S.c(116, 155, 7) + S.c(152, 155, 7)),
         behind(points + band, P.star(28, 24, 9) + P.star(172, 22, 8))
@@ -644,13 +646,13 @@
       var feet = S.r(62, 172, 24, 20, 5) + S.r(114, 172, 24, 20, 5);
       var ant = S.p('M97,34 L103,34 L103,16 L97,16 Z');
       return [fit([
-        behind(head, ant), S.c(100, 10, 8),
-        head,
+        behind(head, B(ant)), B(S.c(100, 10, 8)),
+        B(head),
         mark(head, S.c(78, 62, 14) + S.c(122, 62, 14)),
         S.dot(78, 62, 6), S.dot(122, 62, 6),
         mark(head, S.p('M78,84 L122,84 L122,92 L78,92 Z') + S.l(90, 84, 90, 92) + S.l(110, 84, 110, 92)),
-        behind(body, armL + armR + feet),
-        body,
+        behind(body, B(armL + armR + feet)),
+        B(body),
         mark(body, S.c(100, 132, 14) + S.c(74, 158, 8) + S.c(100, 158, 8) + S.c(126, 158, 8))
       ])];
     } },
@@ -663,9 +665,9 @@
       return [fit([
         behind(wall + roof, P.cloud(146, 20, 10)),
         behind(roof, chimney),
-        behind(roof + door, wall),
-        roof,
-        door,
+        behind(roof + door, B(wall)),
+        B(roof),
+        B(door),
         mark(door, S.c(110, 150, 4)),
         mark(wall, S.p('M46,116 L74,116 L74,142 L46,142 Z') + S.l(60, 116, 60, 142) + S.l(46, 129, 74, 129) +
           S.p('M126,116 L154,116 L154,142 L126,142 Z') + S.l(140, 116, 140, 142) + S.l(126, 129, 154, 129)),
@@ -687,8 +689,8 @@
       return [fit([
         behind(bA + bB + bC + tieA + tieB + tieC, strings),
         S.p('M78,184 C86,190 106,190 116,184'),
-        behind(bC + tieC, bA + tieA + bB + tieB),
-        bC, tieC,
+        behind(bC + tieC, B(bA) + tieA + B(bB) + tieB),
+        B(bC), B(tieC),
         mark(bA, S.hair('M40,54 C46,46 56,44 64,46')),
         mark(bB, S.hair('M120,40 C126,32 136,30 144,32')),
         mark(bC, S.hair('M82,106 C88,98 98,96 106,98')),
@@ -704,10 +706,10 @@
       var bowR = S.p('M104,80 C126,80 154,72 154,54 C154,40 138,34 126,42 C114,50 106,64 100,80 Z');
       var knot = S.c(100, 62, 8);
       return [fit([
-        behind(band, box + lid),
-        band,
-        behind(knot, bowL + bowR),
-        knot,
+        behind(band, B(box) + B(lid)),
+        B(band),
+        behind(knot, B(bowL + bowR)),
+        B(knot),
         behind(lid + bowL + bowR, P.star(20, 42, 10) + P.star(180, 40, 9) +
           P.heart(28, 150, 11) + P.heart(172, 150, 11))
       ])];
@@ -719,8 +721,8 @@
         'C101,180 100,177 100,172 C100,177 99,180 98,182 C78,190 48,174 36,144 ' +
         'C54,152 80,148 100,136 Z');
       return [fit([
-        behind(tail, fluke),
-        tail,
+        behind(tail, B(fluke)),
+        B(tail),
         mark(tail, S.p('M74,54 C86,62 114,62 126,54') +
           S.p('M74,86 C86,94 114,94 126,86') +
           S.p('M80,116 C90,122 110,122 120,116')),
@@ -741,13 +743,13 @@
       var muzzle = S.e(100, 90, 18, 13);
       return [fit([
         behind(body, armL + armR + legL + legR),
-        behind(head, body),
+        behind(head, B(body)),
         mark(body, S.e(100, 152, 24, 26)),
-        behind(head, earL + earR),
-        head,
+        behind(head, B(earL + earR)),
+        B(head),
         mark(earL, S.c(62, 46, 10)), mark(earR, S.c(138, 46, 10)),
         P.eye(84, 68, 8), P.eye(116, 68, 8),
-        muzzle,
+        B(muzzle),
         mark(muzzle, S.e(100, 84, 9, 7)), S.dot(100, 84, 5),
         S.p('M100,92 L100,98'), P.smile(92, 98, 8), P.smile(108, 98, 8),
         mark(S.e(100, 152, 24, 26), P.heart(100, 150, 12))
@@ -756,12 +758,12 @@
 
     { id: 'shapes', name: 'Shapes', emoji: '🔷', art: function () {
       return [fit([
-        S.c(56, 52, 30),
-        S.r(114, 22, 60, 60, 6),
-        S.p('M56,102 L88,164 L24,164 Z'),
-        S.p('M144,98 L178,132 L144,166 L110,132 Z'),
-        P.star(56, 178, 15),
-        P.heart(140, 178, 13)
+        B(S.c(56, 52, 30)),
+        B(S.r(114, 22, 60, 60, 6)),
+        B(S.p('M56,102 L88,164 L24,164 Z')),
+        B(S.p('M144,98 L178,132 L144,166 L110,132 Z')),
+        B(P.star(56, 178, 15)),
+        B(P.heart(140, 178, 13))
       ])];
     } }
   ];

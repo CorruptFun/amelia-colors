@@ -55,23 +55,34 @@ Documented in full atop `js/art-animals.js`. In short:
 Render a contact sheet and compare against the animals sheet before calling a
 page finished.
 
-## Known gaps
+## Auditing the art
 
-Run `node scripts/audit-pages.js` for live numbers. As of 2026-07-28:
+`node scripts/audit-pages.js` rasterises every page, flood-fills it, and reports
+each category against the `animals` baseline. Run it after any art change.
 
-- **91 of 132 pages have no bold outer contour.** `art-core.js` documents the
-  rule — outer contour heavier than interior detail — and only `animals` and
-  `cars` follow it. This is the main reason categories look like different sets.
-- **Scale and weight drift.** Non-animal categories occupy 10–23% less of the
-  board and carry 43–67% less line than `animals`. `yum` (food) is worst: 22%
-  smaller, 67% lighter, and only 8 fill regions against 22 for animals.
-- **16 crammed pages** have fill targets too small to hit. Worst: `add` "4 + 4",
-  `abc` "X — Xylophone", and all four `cbn` pages.
-- **The 4 `cbn` pages override the house stroke** to `2.4` instead of `2.35`.
+As of 2026-07-28 the style pass is complete: **0/132 pages missing a bold outer
+contour** (was 91), **0/132 stroke overrides** (was 4), category span range
+157–180.5 board units (was 148–192). Remaining deviations are all "lighter than
+animals" on `go`/`nature`/`space`/`fun`/`shape` — a rocket or a shape page
+legitimately carries less line than a detailed animal. That is a taste call, not
+a defect; raise it before adding detail.
 
-Do **not** assume `art-cars.js` needs work from its low `behind()` count alone —
-that proxy was misleading. Cars scores well on every measured axis; a car
-silhouette simply needs less occlusion than an animal.
+### Traps this tool has already fallen into
+
+- **Raw bounding box is not subject size.** Animals carry full-width scenery
+  (ground lines, waves), so their bbox reports the horizon. The audit uses a
+  trimmed p2..p98 extent instead — don't "fix" that back.
+- **Region counts must exclude `<text>`.** Word labels enclose one small region
+  per letter counter, so a page captioned XYLOPHONE scored 32 "untappable
+  regions" from its own caption. The audit re-renders without text for the
+  region pass.
+- **A clean audit is not a correct page.** The numbers were green while several
+  ABC icons overlapped their own word labels. Always render contact sheets
+  (`node scripts/render-sheets.js`) and look at them.
+- **Don't bold a cluster of overlapping circles** (grape bunches, clouds, tree
+  canopies). Bold thickens every overlap into a crescent too thin to fill.
+- **Don't infer quality from a raw `behind()` count.** `art-cars.js` was once
+  flagged that way and is in fact one of the two best categories.
 
 ## Deploy
 

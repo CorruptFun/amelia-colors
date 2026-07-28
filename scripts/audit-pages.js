@@ -133,15 +133,28 @@ for (const cat of Art.categories) {
 
     const ink = new Uint8Array(R * R);
     let inkCount = 0, x0 = R, y0 = R, x1 = -1, y1 = -1;
+    const xs = [], ys = [];
     for (let i = 0; i < R * R; i++) {
       if (raw[i] < 128) {
         ink[i] = 1; inkCount++;
         const x = i % R, y = (i / R) | 0;
+        xs.push(x); ys.push(y);
         if (x < x0) x0 = x; if (x > x1) x1 = x;
         if (y < y0) y0 = y; if (y > y1) y1 = y;
       }
     }
     if (x1 < 0) { x0 = y0 = x1 = y1 = 0; }
+
+    /* Raw bbox is not a fair size measure: the animals pages carry scenery
+       (ground lines, grass, waves) that runs the full width of the board, so
+       their bbox reports the horizon rather than the subject. A handful of
+       pixels in a one-pixel-tall line barely moves a percentile, so measure
+       the subject with a trimmed extent instead and keep the raw bbox only
+       for the safe-area check. */
+    xs.sort((a, b) => a - b); ys.sort((a, b) => a - b);
+    const q = (arr, p) => arr.length ? arr[Math.min(arr.length - 1, Math.floor(p * arr.length))] : 0;
+    const coreW = (q(xs, 0.98) - q(xs, 0.02)) * BU;
+    const coreH = (q(ys, 0.98) - q(ys, 0.02)) * BU;
 
     const { enclosed } = regions(ink);
     const areas = enclosed.map(r => r.area * BU * BU);
@@ -160,6 +173,8 @@ for (const cat of Art.categories) {
       bx1: +(x1 * BU).toFixed(1), by1: +(y1 * BU).toFixed(1),
       w: +((x1 - x0 + 1) * BU).toFixed(1),
       h: +((y1 - y0 + 1) * BU).toFixed(1),
+      coreW: +coreW.toFixed(1), coreH: +coreH.toFixed(1),
+      core: +Math.max(coreW, coreH).toFixed(1),
       inkPct: +(100 * inkCount / (R * R)).toFixed(2),
       regions: enclosed.length,
       minRegion: +(areas.length ? Math.min(...areas) : 0).toFixed(1),
@@ -176,9 +191,9 @@ fs.rmSync(TMP, { recursive: true, force: true });
 const base = rows.filter(r => r.cat === baselineId);
 if (!base.length) { console.error(`No pages in baseline category "${baselineId}"`); process.exit(1); }
 const B = {
-  span: median(base.map(r => Math.max(r.w, r.h))),
-  spanLo: pct(base.map(r => Math.max(r.w, r.h)), 0.10),
-  spanHi: pct(base.map(r => Math.max(r.w, r.h)), 0.90),
+  span: median(base.map(r => r.core)),
+  spanLo: pct(base.map(r => r.core), 0.10),
+  spanHi: pct(base.map(r => r.core), 0.90),
   inkMed: median(base.map(r => r.inkPct)),
   inkHi: pct(base.map(r => r.inkPct), 0.90),
   tinyHi: pct(base.map(r => r.tiny), 0.90),
@@ -212,7 +227,7 @@ const catRows = [];
 for (const cat of Art.categories) {
   const rs = byCat.get(cat.id) || [];
   if (!rs.length) continue;
-  const span = median(rs.map(r => Math.max(r.w, r.h)));
+  const span = median(rs.map(r => r.core));
   const ink = median(rs.map(r => r.inkPct));
   const rgn = median(rs.map(r => r.regions));
   const bold = rs.filter(r => r.nBold > 0).length;
@@ -248,7 +263,7 @@ for (const { r } of crammed) {
 // per-page flags still land in the JSON for downstream use
 for (const r of rows) {
   const f = [];
-  const span = Math.max(r.w, r.h);
+  const span = r.core;
   const peers = byCat.get(r.cat);
   const peerTiny = median(peers.map(p => p.tiny + p.slivers));
   if (r.stroke !== HOUSE_STROKE) f.push(`stroke=${r.stroke}`);

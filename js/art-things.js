@@ -3,10 +3,26 @@
    nothing draws through anything, markings stay inside their host shape. */
 (function (Art) {
   'use strict';
-  var S = Art.S, P = Art.Parts;
+  var S = Art.S, P = Art.Parts, Sc = Art.Scene;
+  var B = S.bold, TH = S.thinW, HA = S.hairW;
   var behind = Art.behind, inside = Art.inside;
   function mark(shape, parts) { return inside(shape, parts, 2.6); }
   function fit(parts) { return Art.fit(0.88, 12, 12, parts); }
+
+  /* A surface for the treats to sit on — the food equivalent of the animals'
+     ground(). Always masked by the subject so it never crosses it. */
+  function table(y, sil) { return behind(sil, Sc.horizon(y)); }
+
+  /* Diagonal lattice for waffle cones. `step` is deliberately loose: tighten it
+     and the diamonds stop being big enough to tap, which is how a page turns
+     into a field of slivers. */
+  function lattice(x0, y0, x1, y1, step) {
+    var out = '', t, d = y1 - y0;
+    for (t = x0 - d; t <= x1 + d; t += (step || 22)) {
+      out += S.l(t, y0, t + d, y1) + S.l(t + d, y0, t, y1);
+    }
+    return out;
+  }
 
   function wheel(cx, cy, r, spokes) {
     var out = S.c(cx, cy, r) + S.c(cx, cy, r * 0.55) + S.c(cx, cy, r * 0.18), i, a, k = spokes || 6;
@@ -411,130 +427,198 @@
   ];
 
   /* ---------------- Treats ---------------- */
+  /* ---------------- Yummy ----------------
+     Drawn to the animals standard: full board, bold outer contour, interior
+     detail that ENCLOSES regions (every closed area is somewhere to tap), and
+     scenery masked by the subject. No fit() wrapper — these fill the page.
+
+     Two constraints learned by rendering these: keep art clear of the frame
+     (it sits at 5..195, so nothing above ~12), and put the table line at 186
+     like the animals' ground — any lower and it reads as a smudge against
+     the border rather than a surface. */
   var YUM = [
+
+    /* ------------------------------------------------------- ICE CREAM */
     { id: 'icecream', name: 'Ice Cream', emoji: '🍦', art: function () {
-      var cone = S.p('M62,104 L138,104 L100,192 Z');
-      var scoop = S.p('M84,64 C84,50 116,50 116,64 C130,60 140,74 132,86 C142,92 138,108 124,108 L76,108 C62,108 58,92 68,86 C60,74 70,60 84,64 Z');
-      var cherry = S.c(100, 40, 14);
-      return [fit([
-        behind(scoop, cone),
-        mark(cone, S.p('M70,122 L118,122 M78,140 L110,140 M86,158 L102,158')),
-        behind(cherry, scoop),
-        mark(scoop, S.c(74, 88, 5) + S.c(96, 80, 5) + S.c(122, 86, 5)),
-        cherry,
-        mark(cherry, S.p('M100,26 C104,18 112,16 118,20')),
-        behind(cone + scoop, S.hair('M40,60 L52,54 M160,60 L148,54 M46,110 L58,108 M154,110 L142,108'))
-      ])];
+      var cone   = S.p('M50,110 L150,110 L100,180 Z');
+      var scoopA = S.e(100, 88, 55, 32);
+      var scoopB = S.e(100, 56, 40, 25);
+      var cherry = S.c(100, 30, 12);
+      var sil = cone + scoopA + scoopB + cherry;
+      return [
+        behind(sil, Sc.stars([[22, 46, 9], [178, 50, 8]])),
+        // cone, with a waffle lattice that stops where the scoop covers it
+        behind(scoopA, B(cone) + mark(cone, TH(lattice(50, 112, 150, 178, 26)))),
+        // lower scoop + drips running over the rim
+        behind(scoopB, B(scoopA) +
+          mark(scoopA, TH(S.p('M62,102 C64,112 72,114 74,104') +
+            S.p('M126,104 C128,116 136,116 138,106')))),
+        behind(cherry, B(scoopB) + mark(scoopB, S.c(82, 52, 6) + S.c(114, 50, 6))),
+        B(cherry),
+        TH(S.p('M100,20 C107,12 118,13 122,19')),
+        table(186, sil)
+      ];
     } },
 
+    /* --------------------------------------------------------- CUPCAKE */
     { id: 'cupcake', name: 'Cupcake', emoji: '🧁', art: function () {
-      var cup = S.p('M52,110 L148,110 L134,186 C132,192 126,194 118,194 L82,194 C74,194 68,192 66,186 Z');
-      var frost = S.p('M60,114 C46,114 42,94 54,88 C48,74 62,62 76,68 C80,50 112,46 120,64 C138,58 152,74 144,88 C158,96 152,114 138,114 Z');
-      var cherry = S.c(100, 42, 13);
-      return [fit([
-        behind(frost, cup),
-        mark(cup, S.p('M64,132 L136,132 M72,158 L128,158')),
-        behind(cherry, frost),
-        mark(frost, S.c(72, 92, 4) + S.c(96, 82, 4) + S.c(128, 92, 4) + S.c(110, 100, 4)),
-        cherry,
-        mark(cherry, S.p('M100,29 C104,22 112,20 118,24')),
-        behind(cup + frost, P.star(24, 60, 9) + P.star(176, 66, 8))
-      ])];
+      var cup    = S.p('M46,114 L154,114 L138,176 C136,182 130,184 122,184 L78,184 C70,184 64,182 62,176 Z');
+      var frost  = S.p('M56,118 C38,118 32,94 48,86 C40,66 58,50 76,58 C82,34 118,30 126,56 ' +
+        'C146,48 166,66 152,86 C170,96 162,118 144,118 Z');
+      var cherry = S.c(100, 28, 12);
+      var sil = cup + frost + cherry;
+      return [
+        behind(sil, Sc.stars([[20, 104, 9], [180, 108, 8]])),
+        // wrapper: a rim band plus pleats, so the cup is several fillable strips
+        behind(frost, B(cup) + mark(cup, TH(S.l(46, 132, 154, 132) +
+          S.l(74, 132, 68, 182) + S.l(100, 132, 100, 184) + S.l(126, 132, 132, 182)))),
+        behind(cherry, B(frost) + mark(frost,
+          S.c(68, 96, 6) + S.c(100, 82, 6) + S.c(132, 96, 6) +
+          S.c(84, 68, 5) + S.c(116, 66, 5))),
+        B(cherry),
+        TH(S.p('M100,18 C107,10 118,11 122,17')),
+        table(190, sil)
+      ];
     } },
 
+    /* ----------------------------------------------------------- DONUT */
     { id: 'donut', name: 'Donut', emoji: '🍩', art: function () {
-      var ring = S.c(100, 104, 76), hole = S.c(100, 104, 28);
-      var glaze = S.p('M100,28 C58,28 24,62 24,104 C24,112 26,120 28,126 C36,116 44,124 52,116 C60,108 70,120 78,112 C88,102 96,116 106,108 C116,100 124,114 134,106 C144,98 152,110 162,102 C170,96 174,104 176,110 C176,106 176,104 176,104 C176,62 142,28 100,28 Z');
-      return [fit([
-        ring,
-        behind(hole, glaze),
-        hole,
-        // sprinkles only where there is glaze to sit on
-        inside(glaze, behind(hole, S.p('M60,60 L74,56 M88,44 L96,54 M118,50 L128,42 ' +
-          'M140,68 L152,62 M50,84 L64,80 M136,88 L148,84 M92,72 L104,66')), 3),
-        mark(ring, S.p('M40,124 L52,120 M70,132 L82,128 M112,130 L124,126 M144,120 L156,116')),
-        behind(ring, P.star(22, 172, 9) + P.star(178, 174, 8))
-      ])];
+      var ring = S.c(100, 100, 80);
+      var hole = S.c(100, 100, 30);
+      /* Icing as a proper closed band: the ring's own top edge, then a run of
+         drips back across the middle. Drawn as one shape so it encloses a
+         region instead of reading as a stray squiggle. */
+      var glaze = S.p('M20,100 A80,80 0 0 1 180,100 ' +
+        'C172,118 164,102 156,120 C148,138 140,118 132,132 ' +
+        'C124,146 116,124 108,138 C100,152 92,128 84,140 ' +
+        'C76,152 68,126 60,138 C52,150 44,120 36,130 C28,140 24,114 20,100 Z');
+      var sil = ring;
+      return [
+        behind(sil, Sc.stars([[18, 176, 9], [182, 178, 8]])),
+        B(ring),
+        behind(hole, B(glaze)),
+        B(hole),
+        // sprinkles sit only where there is icing to sit on
+        inside(glaze, behind(hole, TH(
+          S.p('M56,60 L70,54 M88,44 L96,54 M120,48 L130,40 M144,66 L156,60 ' +
+            'M46,86 L60,82 M140,90 L152,86 M92,72 L104,66 M70,102 L82,98 ' +
+            'M116,96 L128,90')), 4), 3),
+        mark(ring, TH(S.p('M38,150 L52,144 M74,164 L88,158 M114,164 L128,158 M150,148 L162,142'))),
+        table(190, sil)
+      ];
     } },
 
+    /* ------------------------------------------------------ WATERMELON */
     { id: 'watermelon', name: 'Watermelon', emoji: '🍉', art: function () {
-      var slice = S.p('M14,60 L186,60 C186,120 148,168 100,168 C52,168 14,120 14,60 Z');
-      var flesh = S.p('M28,68 C28,120 60,158 100,158 C140,158 172,120 172,68 Z');
-      return [fit([
-        slice,
-        flesh,
-        mark(flesh, S.dot(70, 86, 5) + S.dot(100, 82, 5) + S.dot(130, 86, 5) +
-          S.dot(58, 112, 5) + S.dot(86, 110, 5) + S.dot(114, 110, 5) + S.dot(142, 112, 5) +
-          S.dot(78, 134, 5) + S.dot(122, 134, 5) + S.dot(100, 146, 5)),
-        behind(slice, P.heart(38, 32, 13) + P.star(166, 30, 10))
-      ])];
+      var slice = S.p('M12,54 L188,54 C188,124 148,178 100,178 C52,178 12,124 12,54 Z');
+      var pith  = S.p('M26,62 C26,120 58,166 100,166 C142,166 174,120 174,62 Z');
+      var flesh = S.p('M38,68 C38,114 64,154 100,154 C136,154 162,114 162,68 Z');
+      var sil = slice;
+      return [
+        behind(sil, Sc.stars([[26, 30, 9], [174, 28, 8]])),
+        B(slice),
+        pith,
+        B(flesh),
+        mark(flesh, S.dot(66, 86, 5) + S.dot(100, 82, 5) + S.dot(134, 86, 5) +
+          S.dot(56, 112, 5) + S.dot(84, 108, 5) + S.dot(116, 108, 5) + S.dot(144, 112, 5) +
+          S.dot(74, 134, 5) + S.dot(126, 134, 5) + S.dot(100, 146, 5)),
+        table(188, sil)
+      ];
     } },
 
+    /* ----------------------------------------------------------- PIZZA */
     { id: 'pizza', name: 'Pizza Slice', emoji: '🍕', art: function () {
-      var slice = S.p('M100,14 L178,166 C140,182 60,182 22,166 Z');
-      var crust = S.p('M28,158 C64,172 136,172 172,158 C176,166 178,166 178,166 C140,182 60,182 22,166 Z');
-      return [fit([
-        slice,
-        behind(crust, S.c(100, 86, 13) + S.c(74, 126, 13) + S.c(128, 130, 13) +
-          S.c(100, 152, 11) + S.c(90, 54, 9)),
-        crust,
-        mark(slice, S.hair('M58,140 L66,146 M136,140 L144,146 M100,106 L106,112'))
-      ])];
+      var slice = S.p('M100,14 L182,164 C140,182 60,182 18,164 Z');
+      var crust = S.p('M24,152 C64,170 136,170 176,152 C179,158 182,164 182,164 ' +
+        'C140,182 60,182 18,164 C18,164 21,158 24,152 Z');
+      var sil = slice;
+      return [
+        behind(sil, Sc.stars([[24, 48, 9], [176, 52, 8]])),
+        behind(crust, B(slice)),
+        // toppings kept well inside the slice so none breaks its edge
+        behind(crust, B(S.c(100, 84, 15) + S.c(72, 124, 14) + S.c(128, 128, 14) +
+          S.c(100, 146, 12))),
+        B(crust),
+        mark(slice, HA(S.p('M58,140 L66,146 M140,140 L148,146 M100,112 L107,118'))),
+        table(190, sil)
+      ];
     } },
 
+    /* ----------------------------------------------------------- APPLE */
     { id: 'apple', name: 'Apple', emoji: '🍎', art: function () {
-      var fruit = S.p('M100,52 C86,36 56,36 40,58 C22,82 30,132 52,160 C64,176 80,180 100,168 C120,180 136,176 148,160 C170,132 178,82 160,58 C144,36 114,36 100,52 Z');
-      var stalk = S.p('M97,50 L103,50 L103,20 L97,20 Z');
-      var leaf = S.p('M102,30 C118,10 152,10 158,26 C142,44 114,44 102,30 Z');
-      return [fit([
-        behind(fruit + leaf, stalk),
-        behind(fruit, leaf),
-        fruit,
-        mark(leaf, S.hair('M112,30 C126,24 140,22 150,24')),
-        P.eye(74, 96, 9), P.eye(126, 96, 9),
-        P.smile(100, 122, 14),
-        S.c(64, 126, 7), S.c(136, 126, 7)
-      ])];
+      var fruit = S.p('M100,50 C84,30 50,30 32,58 C12,86 22,142 46,174 ' +
+        'C60,190 78,194 100,182 C122,194 140,190 154,174 C178,142 188,86 168,58 ' +
+        'C150,30 116,30 100,50 Z');
+      var stalk = S.p('M96,48 L104,48 L104,20 L96,20 Z');
+      var leaf  = S.p('M104,30 C120,10 156,10 163,26 C146,46 116,46 104,30 Z');
+      var sil = fruit + leaf + stalk;
+      return [
+        // stars sit above the shoulders, clear of both the fruit and the leaf —
+        // anywhere lower and the silhouette mask eats them into a fragment
+        behind(sil, Sc.stars([[24, 40, 9], [176, 40, 8]])),
+        behind(fruit + leaf, B(stalk)),
+        behind(fruit, B(leaf) + mark(leaf, HA(S.p('M115,30 C130,23 146,21 157,24')))),
+        B(fruit),
+        // a highlight sweep gives the fruit a second region to colour
+        mark(fruit, TH(S.p('M44,98 C40,76 52,58 68,52'))),
+        P.eye(76, 106, 10), P.eye(124, 106, 10),
+        P.smile(100, 134, 15),
+        TH(P.blush(58, 138, 9), P.blush(142, 138, 9)),
+        table(190, sil)
+      ];
     } },
 
+    /* -------------------------------------------------------- LOLLIPOP */
     { id: 'lollipop', name: 'Lollipop', emoji: '🍭', art: function () {
-      var candy = S.c(100, 76, 60);
-      var stick = S.r(94, 136, 12, 60, 5);
-      var bowL = S.p('M100,146 C84,132 62,138 60,152 C74,162 92,158 100,150 Z');
-      var bowR = S.p('M100,146 C116,132 138,138 140,152 C126,162 108,158 100,150 Z');
+      var candy = S.c(100, 76, 62);
+      var stick = S.r(93, 134, 14, 52, 6);
+      var bowL  = S.p('M100,150 C84,136 60,142 58,158 C74,170 92,164 100,155 Z');
+      var bowR  = S.p('M100,150 C116,136 140,142 142,158 C126,170 108,164 100,155 Z');
       var swirl = (function () {
         var d = '', i, a, r;
-        for (i = 0; i <= 150; i++) {
-          a = (i / 150) * Math.PI * 6;
-          r = 6 + (i / 150) * 48;
-          d += (i ? ' L' : 'M') + Math.round(100 + Math.cos(a) * r) + ',' + Math.round(76 + Math.sin(a) * r);
+        for (i = 0; i <= 170; i++) {
+          a = (i / 170) * Math.PI * 6;
+          r = 8 + (i / 170) * 48;
+          d += (i ? ' L' : 'M') + Math.round(100 + Math.cos(a) * r) + ',' +
+            Math.round(76 + Math.sin(a) * r);
         }
         return S.p(d);
       })();
-      return [fit([
-        behind(candy + bowL + bowR, stick),
-        candy,
-        mark(candy, swirl),
-        bowL, bowR, S.c(100, 149, 6),
-        behind(candy, P.star(28, 30, 10) + P.star(172, 34, 9))
-      ])];
+      var sil = candy + stick + bowL + bowR;
+      return [
+        behind(sil, Sc.stars([[24, 26, 9], [176, 24, 8]])),
+        behind(candy + bowL + bowR, B(stick)),
+        B(candy),
+        mark(candy, TH(swirl)),
+        B(bowL), B(bowR),
+        S.c(100, 153, 7),
+        table(190, sil)
+      ];
     } },
 
+    /* --------------------------------------------------- BIRTHDAY CAKE */
     { id: 'cake', name: 'Birthday Cake', emoji: '🎂', art: function () {
-      var lower = S.p('M22,190 L22,138 L178,138 L178,190 Z');
-      var upper = S.p('M36,138 L36,100 L164,100 L164,138 Z');
-      var candles = S.r(64, 66, 10, 34, 3) + S.r(95, 60, 10, 40, 3) + S.r(126, 66, 10, 34, 3);
-      return [fit([
-        behind(upper, candles),
-        behind(upper, lower),
-        mark(lower, S.p('M22,150 C36,160 50,140 64,150 C78,160 92,140 106,150 C120,160 134,140 148,150 C158,157 170,146 178,150') +
-          S.c(60, 170, 7) + S.c(100, 172, 7) + S.c(140, 170, 7)),
-        upper,
-        mark(upper, S.p('M36,110 C48,120 60,100 72,110 C84,120 96,100 108,110 C120,120 132,100 144,110 C152,116 158,108 164,110')),
-        S.p('M69,66 C60,56 66,44 69,40 C72,44 78,56 69,66 Z'),
-        S.p('M100,60 C91,50 97,38 100,34 C103,38 109,50 100,60 Z'),
-        S.p('M131,66 C122,56 128,44 131,40 C134,44 140,56 131,66 Z')
-      ])];
+      var lower   = S.p('M14,180 L14,126 L186,126 L186,180 Z');
+      var upper   = S.p('M32,126 L32,84 L168,84 L168,126 Z');
+      var candles = S.r(60, 50, 12, 42, 4) + S.r(94, 42, 12, 50, 4) + S.r(128, 50, 12, 42, 4);
+      var flames  = S.p('M66,50 C55,38 62,24 66,19 C70,24 77,38 66,50 Z') +
+        S.p('M100,42 C89,30 96,16 100,11 C104,16 111,30 100,42 Z') +
+        S.p('M134,50 C123,38 130,24 134,19 C138,24 145,38 134,50 Z');
+      var sil = lower + upper + candles + flames;
+      return [
+        behind(sil, Sc.stars([[22, 60, 9], [178, 58, 8]])),
+        behind(upper, B(candles)),
+        behind(upper, B(lower) +
+          mark(lower, TH(S.p('M14,142 C32,154 50,132 68,142 C86,152 104,130 122,142 ' +
+            'C140,152 158,130 176,140 C180,143 186,140 186,140')) +
+            S.c(48, 164, 8) + S.c(100, 166, 8) + S.c(152, 164, 8))),
+        B(upper),
+        mark(upper, TH(S.p('M32,98 C46,110 60,88 74,98 C88,108 102,86 116,98 ' +
+          'C130,108 144,88 158,98 C162,101 168,98 168,98')) +
+          S.c(64, 114, 6) + S.c(104, 116, 6) + S.c(140, 114, 6)),
+        B(flames),
+        table(188, sil)
+      ];
     } }
   ];
 

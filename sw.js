@@ -17,14 +17,14 @@
 */
 
 // 👉 CUSTOMIZE: rename to your app, and bump CACHE_VERSION per deploy (e.g. a build stamp).
-const CACHE_VERSION = "20260728-180310";
+const CACHE_VERSION = "20260729-092821";
 const CACHE_NAME    = `amelia-colors-${CACHE_VERSION}`;
 
 // Asset URLs carry ?v=ASSET_VERSION, rewritten by scripts/deploy.sh in lockstep
 // with index.html. A new build therefore requests URLs that cannot be stale in
 // any HTTP cache — which is what stops a shipped fix sitting invisible for the
 // 10 minutes GitHub Pages puts on max-age.
-const ASSET_VERSION = "20260728-180310";
+const ASSET_VERSION = "20260729-092821";
 const v = (path) => `${path}?v=${ASSET_VERSION}`;
 
 // 👉 CUSTOMIZE: the offline shell, precached at install. Relative paths (resolved against

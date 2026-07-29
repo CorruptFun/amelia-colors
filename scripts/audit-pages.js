@@ -156,21 +156,32 @@ for (const cat of Art.categories) {
     const coreW = (q(xs, 0.98) - q(xs, 0.02)) * BU;
     const coreH = (q(ys, 0.98) - q(ys, 0.02)) * BU;
 
-    /* Region counts must come from the ART only. Rendered word labels enclose
-       one small region per letter counter (the hole in an "o", "e", "R"), so a
-       page captioned XYLOPHONE scored 32 "untappable regions" purely from its
-       own caption — the count tracked word length, not drawing quality.
-       Re-render without <text> and measure the drawing. */
+    /* Two different questions, so two different renders.
+
+       FILL TARGETS come from the full page, size-filtered. Glyphs are stroked
+       and unfilled, so a big letter or numeral is a genuine thing to colour and
+       must count — a child absolutely colours the "5" on a counting page.
+       Anything under the tap threshold is not a target and is excluded.
+
+       CRAMMING comes from the art alone. Word labels enclose one small region
+       per letter counter (the hole in an "o", "e", "R"), so a page captioned
+       XYLOPHONE once scored 32 "untappable regions" purely from its own
+       caption — the count tracked word length, not drawing quality. */
+    const MIN_TARGET = 6;                       // board units², roughly a fingertip
+    const all = regions(ink).enclosed;
+    const targets = all.filter(r => r.area * BU * BU >= MIN_TARGET);
+
     const svgNoText = Art.toSVG(String(svgBody).replace(/<text[\s\S]*?<\/text>/g, ''),
       { size: R, stroke, frame: false });
     const rawArt = rasterise(svgNoText);
     const inkArt = new Uint8Array(R * R);
     for (let i = 0; i < R * R; i++) if (rawArt[i] < 128) inkArt[i] = 1;
+    const art = regions(inkArt).enclosed;
 
-    const { enclosed } = regions(inkArt);
-    const areas = enclosed.map(r => r.area * BU * BU);
-    const tiny = enclosed.filter(r => r.area * BU * BU < 6).length;
-    const slivers = enclosed.filter(r => Math.min(r.w, r.h) * BU < 2).length;
+    const areas = targets.map(r => r.area * BU * BU);
+    const tiny = art.filter(r => r.area * BU * BU < MIN_TARGET).length;
+    const slivers = art.filter(r => Math.min(r.w, r.h) * BU < 2).length;
+    const enclosed = targets;
 
     // an SVG string scan for the line-weight vocabulary
     const flat = String(svgBody);
@@ -257,7 +268,27 @@ for (const cat of Art.categories) {
     `${P(bold + '/' + rs.length, 8)}${P(strokes.join(','), 8)}  ${dev.join(' · ')}`);
 }
 
-console.log(`\n══ B. Crammed pages ` + '═'.repeat(48));
+/* ---- B. Fill targets ---------------------------------------------------
+   The metric that actually matters. ink% is only a proxy for detail and has
+   twice pointed at the wrong work: a page can be "50% lighter" than an animals
+   page and still give a child more to colour. What matters is how many enclosed
+   areas there are, and how big they are — a page made of five enormous regions
+   is a worse colouring page than one made of twenty medium ones, at any ink
+   density. Compare the medArea column against the baseline before adding line. */
+const FLOOR = 12;
+console.log(`\n══ B. Thin pages — under ${FLOOR} fill targets ` + '═'.repeat(30));
+console.log(`   baseline "${baselineId}": median ${median(base.map(r => r.regions))} targets, ` +
+  `median region area ${median(base.map(r => r.medRegion)).toFixed(0)}\n`);
+console.log(`   ${W('category', 10)}${W('page', 18)}${P('targets', 8)}${P('medArea', 10)}${P('ink%', 7)}`);
+console.log('   ' + '─'.repeat(53));
+const thin = rows.filter(r => r.regions < FLOOR).sort((a, b) => a.regions - b.regions);
+for (const r of thin) {
+  console.log(`   ${W(r.cat, 10)}${W(r.name, 18)}${P(r.regions, 8)}` +
+    `${P(r.medRegion.toFixed(0), 10)}${P(r.inkPct, 7)}`);
+}
+if (!thin.length) console.log('   (none)');
+
+console.log(`\n══ C. Crammed pages ` + '═'.repeat(48));
 console.log('   tiny = fill targets too small to hit · slvr = gaps under ~2 board units\n');
 console.log(`   ${W('category', 10)}${W('page', 17)}${P('ink%', 7)}${P('rgns', 6)}` +
   `${P('tiny', 6)}${P('slvr', 6)}${P('minRgn', 8)}`);

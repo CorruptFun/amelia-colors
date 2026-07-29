@@ -434,7 +434,6 @@
       art: function () {
         var sil = draw();
         return [
-          behind(sil, P.star(20, 24, 9) + P.star(180, 24, 8)),
           B(sil),
           inner ? mark(sil, TH(inner())) : '',
           S.glyph(label.toUpperCase(), 100, 180, 24)
@@ -442,31 +441,71 @@
       }
     };
   }
+  /* Each shape carries an interior pattern, not just a concentric echo. A bare
+     shape is one huge region — the whole page is a single tap and a very long
+     fill for a small hand. Subdividing keeps the shape perfectly readable (a
+     circle cut into segments is still a circle) while giving ten or so
+     medium-sized areas, which is what the animals pages feel like to colour. */
   var SHAPE = [
-    shapePage('circle', 'Circle', '⭕',
+    shapePage('circle', 'Circle', '\u2b55',
       function () { return S.c(100, 82, 70); },
-      function () { return S.c(100, 82, 44) + S.c(100, 82, 20); }),
-    shapePage('square', 'Square', '🟦',
+      function () {
+        var out = S.c(100, 82, 46) + S.c(100, 82, 22), i, a;
+        for (i = 0; i < 6; i++) {            // spokes across the outer ring only
+          a = (Math.PI / 3) * i;
+          out += S.l(100 + Math.cos(a) * 46, 82 + Math.sin(a) * 46,
+            100 + Math.cos(a) * 70, 82 + Math.sin(a) * 70);
+        }
+        return out;
+      }),
+    shapePage('square', 'Square', '\ud83d\udfe6',
       function () { return S.r(30, 14, 140, 140, 10); },
-      function () { return S.r(56, 40, 88, 88, 8) + S.r(80, 64, 40, 40, 6); }),
-    shapePage('triangle', 'Triangle', '🔺',
+      function () {
+        return S.r(52, 36, 96, 96, 6) +
+          S.l(84, 36, 84, 132) + S.l(116, 36, 116, 132) +
+          S.l(52, 68, 148, 68) + S.l(52, 100, 148, 100);
+      }),
+    shapePage('triangle', 'Triangle', '\ud83d\udd3a',
       function () { return S.p('M100,10 L176,150 L24,150 Z'); },
-      function () { return S.p('M100,48 L146,134 L54,134 Z') + S.c(100, 112, 14); }),
-    shapePage('star', 'Star', '⭐',
+      function () {
+        // midpoint subdivision, then the middle one split again
+        return S.p('M62,80 L138,80 L100,150 Z') +
+          S.p('M81,115 L119,115 L100,150 Z') + S.c(100, 52, 13);
+      }),
+    shapePage('star', 'Star', '\u2b50',
       function () { return P.star(100, 84, 74); },
-      function () { return P.star(100, 84, 40) + S.c(100, 84, 16); }),
-    shapePage('heart', 'Heart', '❤️',
+      function () {
+        var out = P.star(100, 84, 40) + S.c(100, 84, 18), i, a;
+        for (i = 0; i < 5; i++) {            // one spoke into each point
+          a = (Math.PI * 2 / 5) * i - Math.PI / 2;
+          out += S.l(100 + Math.cos(a) * 40, 84 + Math.sin(a) * 40,
+            100 + Math.cos(a) * 74, 84 + Math.sin(a) * 74);
+        }
+        return out;
+      }),
+    shapePage('heart', 'Heart', '\u2764\ufe0f',
       function () { return P.heart(100, 90, 60); },
-      function () { return P.heart(100, 90, 36) + P.heart(100, 90, 16); }),
-    shapePage('diamond', 'Diamond', '🔷',
+      function () {
+        return P.heart(100, 90, 44) + P.heart(100, 90, 28) + P.heart(100, 90, 13);
+      }),
+    shapePage('diamond', 'Diamond', '\ud83d\udd37',
       function () { return S.p('M100,12 L172,84 L100,156 L28,84 Z'); },
-      function () { return S.p('M100,44 L140,84 L100,124 L60,84 Z') + S.c(100, 84, 14); }),
-    shapePage('oval', 'Oval', '🥚',
+      function () {
+        return S.p('M100,44 L140,84 L100,124 L60,84 Z') +
+          S.l(100, 12, 100, 156) + S.l(28, 84, 172, 84) + S.c(100, 84, 15);
+      }),
+    shapePage('oval', 'Oval', '\ud83e\udd5a',
       function () { return S.e(100, 84, 72, 56); },
-      function () { return S.e(100, 84, 44, 34) + S.e(100, 84, 18, 14); }),
-    shapePage('rectangle', 'Rectangle', '▬',
+      function () {
+        return S.e(100, 84, 48, 36) + S.e(100, 84, 22, 16) +
+          S.l(30, 60, 170, 60) + S.l(30, 108, 170, 108);
+      }),
+    shapePage('rectangle', 'Rectangle', '\u25ac',
       function () { return S.r(18, 26, 164, 116, 10); },
-      function () { return S.r(44, 52, 112, 64, 8) + S.c(100, 84, 18); })
+      function () {
+        return S.r(40, 46, 120, 76, 8) +
+          S.l(80, 46, 80, 122) + S.l(120, 46, 120, 122) + S.l(40, 84, 160, 84);
+      })
   ];
 
   function reg(list, id, name, emoji, color) {

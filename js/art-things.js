@@ -129,7 +129,10 @@
         B(sailL), B(sailR),
         S.p('M100,20 L128,26 L100,32 Z'),
         B(hull),
-        mark(hull, S.p('M40,140 L160,140')),
+        mark(hull, S.p('M40,140 L160,140') +
+          S.c(62, 150, 8) + S.c(100, 150, 8) + S.c(138, 150, 8)),
+        mark(sailL, TH(S.p('M44,88 L100,88') + S.p('M64,58 L100,58'))),
+        mark(sailR, TH(S.p('M100,88 L152,88') + S.p('M100,62 L134,62'))),
         S.c(160, 40, 16), S.hair('M160,16 L160,4 M180,24 L190,16 M184,40 L196,40')
       ])];
     } },
@@ -165,10 +168,11 @@
       return [fit([
         behind(body + cab, arm),
         behind(arm, bucket),
-        mark(bucket, S.p('M22,100 L26,110 M32,97 L36,107 M42,94 L46,104')),
+        mark(bucket, S.p('M20,98 L28,112 M30,95 L38,109 M40,92 L48,106')),
         behind(cab, B(body)),
         B(cab),
-        mark(cab, S.p('M108,56 L148,56 L148,86 L108,86 Z') + S.l(128, 56, 128, 86)),
+        mark(cab, S.p('M108,56 L148,56 L148,86 L108,86 Z') + S.l(128, 56, 128, 86) +
+          S.l(108, 71, 148, 71)),
         behind(body + cab, B(track)),
         mark(track, S.c(46, 149, 11) + S.c(100, 149, 11) + S.c(154, 149, 11)),
         behind(track, S.p('M4,182 L196,182'))
@@ -234,7 +238,8 @@
       return [fit([
         B(canopy),
         mark(canopy, S.c(72, 62, 10) + S.c(112, 48, 10) + S.c(140, 74, 10) +
-          S.c(94, 86, 10) + S.c(128, 100, 9) + S.p('M84,140 C96,144 110,144 122,140')),
+          S.c(94, 86, 10) + S.c(128, 100, 9) + S.c(56, 92, 9) + S.c(104, 116, 9) +
+          S.c(150, 50, 8) + S.p('M84,140 C96,144 110,144 122,140') + S.p('M84,158 C96,162 110,162 122,158')),
         behind(canopy, S.p('M30,178 L170,178') + S.c(58, 168, 9) + S.c(150, 170, 9) +
           S.hair('M40,178 Q46,168 52,178 M156,178 Q162,168 168,178'))
       ])];
@@ -275,7 +280,8 @@
       return [fit([
         behind(cloudL + cloudR, arcs),
         cloudL, cloudR,
-        behind(arcs + cloudL + cloudR, P.star(100, 26, 11) + S.c(30, 60, 6) + S.c(172, 66, 5)),
+        behind(arcs + cloudL + cloudR, P.star(100, 26, 11) + S.c(30, 60, 6) + S.c(172, 66, 5) +
+          S.e(44, 40, 13, 8, -18) + S.e(158, 34, 13, 8, 16) + S.e(74, 20, 11, 7, -10)),
         behind(cloudL + cloudR, S.p('M4,186 L196,186'))
       ])];
     } },
@@ -287,9 +293,10 @@
         behind(cap, B(stem)),
         B(cap),
         mark(cap, S.c(64, 74, 15) + S.c(122, 66, 13) + S.c(150, 92, 11) +
-          S.c(88, 96, 10) + S.c(40, 100, 8)),
+          S.c(88, 96, 10) + S.c(40, 100, 8) + S.c(104, 48, 9) + S.c(166, 66, 7)),
         P.eye(86, 140, 8), P.eye(114, 140, 8), P.smile(100, 156, 10),
-        behind(stem, S.hair('M8,186 Q30,178 52,186 T96,186 T140,186 T192,186'))
+        behind(stem, S.hair('M8,186 Q30,178 52,186 T96,186 T140,186 T192,186') +
+          S.e(32, 180, 16, 7) + S.e(168, 180, 16, 7))
       ])];
     } },
 
@@ -327,7 +334,8 @@
       return [fit([
         cloud,
         behind(cloud + puddle, drop(56, 120, 1) + drop(100, 134, 1.1) + drop(144, 118, 1) +
-          drop(38, 152, 0.8) + drop(164, 150, 0.8) + drop(78, 158, 0.7) + drop(122, 160, 0.7)),
+          drop(38, 152, 0.8) + drop(164, 150, 0.8) + drop(78, 158, 0.7) + drop(122, 160, 0.7) +
+          drop(20, 122, 0.7) + drop(100, 100, 0.8) + drop(182, 122, 0.7)),
         B(puddle),
         mark(puddle, S.hair('M70,178 Q84,172 98,178 T126,178')),
         S.hair('M8,192 L192,192')
@@ -411,7 +419,9 @@
         B(saucer),
         mark(saucer, S.c(60, 100, 8) + S.c(80, 106, 8) + S.c(100, 108, 8) +
           S.c(120, 106, 8) + S.c(140, 100, 8)),
-        mark(beam, S.hair('M92,132 L92,182 M110,132 L110,182')),
+        mark(beam, S.hair('M92,132 L92,182 M110,132 L110,182') +
+          S.e(100, 150, 26, 7) + S.e(100, 172, 32, 8)),
+        mark(dome, S.c(100, 78, 14)),
         behind(saucer + dome + beam, P.star(26, 40, 10) + P.star(176, 46, 9) + P.star(34, 150, 7))
       ])];
     } },
@@ -476,7 +486,8 @@
           S.l(74, 132, 68, 182) + S.l(100, 132, 100, 184) + S.l(126, 132, 132, 182)))),
         behind(cherry, B(frost) + mark(frost,
           S.c(68, 96, 6) + S.c(100, 82, 6) + S.c(132, 96, 6) +
-          S.c(84, 68, 5) + S.c(116, 66, 5))),
+          S.c(84, 68, 5) + S.c(116, 66, 5) +
+          TH(S.p('M46,104 C72,114 128,114 154,104') + S.p('M56,76 C76,86 124,86 144,76')))),
         B(cherry),
         TH(S.p('M100,18 C107,10 118,11 122,17')),
         table(190, sil)
@@ -501,11 +512,16 @@
         behind(hole, B(glaze)),
         B(hole),
         // sprinkles sit only where there is icing to sit on
+        // sprinkles as capsules rather than strokes — an open line adds ink but
+        // no fill target, which is how this page had only five
         inside(glaze, behind(hole, TH(
-          S.p('M56,60 L70,54 M88,44 L96,54 M120,48 L130,40 M144,66 L156,60 ' +
-            'M46,86 L60,82 M140,90 L152,86 M92,72 L104,66 M70,102 L82,98 ' +
-            'M116,96 L128,90')), 4), 3),
-        mark(ring, TH(S.p('M38,150 L52,144 M74,164 L88,158 M114,164 L128,158 M150,148 L162,142'))),
+          S.rr(50, 56, 16, 7, 3.5, -28) + S.rr(84, 42, 16, 7, 3.5, 34) +
+          S.rr(116, 44, 16, 7, 3.5, -40) + S.rr(140, 62, 16, 7, 3.5, -20) +
+          S.rr(42, 84, 16, 7, 3.5, -12) + S.rr(136, 88, 16, 7, 3.5, -16) +
+          S.rr(88, 68, 16, 7, 3.5, -30) + S.rr(64, 100, 16, 7, 3.5, -18) +
+          S.rr(112, 92, 16, 7, 3.5, -34)), 4), 3),
+        mark(ring, TH(S.rr(36, 146, 15, 6, 3, -22) + S.rr(72, 160, 15, 6, 3, -20) +
+          S.rr(112, 160, 15, 6, 3, -20) + S.rr(148, 144, 15, 6, 3, -24))),
         table(190, sil)
       ];
     } },
@@ -521,9 +537,12 @@
         B(slice),
         pith,
         B(flesh),
-        mark(flesh, S.dot(66, 86, 5) + S.dot(100, 82, 5) + S.dot(134, 86, 5) +
-          S.dot(56, 112, 5) + S.dot(84, 108, 5) + S.dot(116, 108, 5) + S.dot(144, 112, 5) +
-          S.dot(74, 134, 5) + S.dot(126, 134, 5) + S.dot(100, 146, 5)),
+        // outlined seeds, not solid ink — ten seeds is ten things to colour,
+        // where S.dot() just painted them black
+        mark(flesh, S.e(66, 86, 4, 5.5) + S.e(100, 82, 4, 5.5) + S.e(134, 86, 4, 5.5) +
+          S.e(56, 112, 4, 5.5) + S.e(84, 108, 4, 5.5) + S.e(116, 108, 4, 5.5) +
+          S.e(144, 112, 4, 5.5) + S.e(74, 134, 4, 5.5) + S.e(126, 134, 4, 5.5) +
+          S.e(100, 146, 4, 5.5)),
         table(188, sil)
       ];
     } },
@@ -539,9 +558,9 @@
         behind(crust, B(slice)),
         // toppings kept well inside the slice so none breaks its edge
         behind(crust, B(S.c(100, 84, 15) + S.c(72, 124, 14) + S.c(128, 128, 14) +
-          S.c(100, 146, 12))),
+          S.c(100, 146, 12) + S.c(96, 52, 10) + S.c(48, 152, 11) + S.c(152, 154, 11))),
         B(crust),
-        mark(slice, HA(S.p('M58,140 L66,146 M140,140 L148,146 M100,112 L107,118'))),
+        mark(crust, TH(S.p('M32,160 C64,174 136,174 168,160'))),
         table(190, sil)
       ];
     } },
@@ -579,8 +598,8 @@
       var swirl = (function () {
         var d = '', i, a, r;
         for (i = 0; i <= 170; i++) {
-          a = (i / 170) * Math.PI * 6;
-          r = 8 + (i / 170) * 48;
+          a = (i / 170) * Math.PI * 4.4;
+          r = 12 + (i / 170) * 44;
           d += (i ? ' L' : 'M') + Math.round(100 + Math.cos(a) * r) + ',' +
             Math.round(76 + Math.sin(a) * r);
         }
@@ -593,7 +612,9 @@
         B(candy),
         mark(candy, TH(swirl)),
         B(bowL), B(bowR),
-        S.c(100, 153, 7),
+        mark(bowL, TH(S.p('M96,148 C84,146 72,148 64,154'))),
+        mark(bowR, TH(S.p('M104,148 C116,146 128,148 136,154'))),
+        B(S.c(100, 153, 8)), mark(S.r(93, 134, 14, 52, 6), TH(S.l(93, 160, 107, 160))),
         table(190, sil)
       ];
     } },
@@ -691,9 +712,9 @@
         S.p('M78,184 C86,190 106,190 116,184'),
         behind(bC + tieC, B(bA) + tieA + B(bB) + tieB),
         B(bC), B(tieC),
-        mark(bA, S.hair('M40,54 C46,46 56,44 64,46')),
-        mark(bB, S.hair('M120,40 C126,32 136,30 144,32')),
-        mark(bC, S.hair('M82,106 C88,98 98,96 106,98')),
+        mark(bA, S.e(44, 56, 11, 8, -32) + S.c(60, 84, 12)),
+        mark(bB, S.e(124, 42, 11, 8, -32) + S.c(140, 70, 12)),
+        mark(bC, S.e(84, 108, 10, 7, -32) + S.c(100, 132, 12)),
         behind(bA + bB + bC, P.star(20, 130, 9) + P.star(184, 128, 8))
       ])];
     } },
@@ -723,9 +744,11 @@
       return [fit([
         behind(tail, B(fluke)),
         B(tail),
-        mark(tail, S.p('M74,54 C86,62 114,62 126,54') +
-          S.p('M74,86 C86,94 114,94 126,86') +
-          S.p('M80,116 C90,122 110,122 120,116')),
+        mark(tail, S.p('M62,54 C86,64 114,64 138,54') +
+          S.p('M62,72 C86,82 114,82 138,72') +
+          S.p('M62,90 C86,100 114,100 138,90') +
+          S.p('M64,108 C88,118 112,118 136,108') +
+          S.p('M70,126 C90,134 110,134 130,126')),
         mark(fluke, S.thinW(S.p('M112,150 C124,160 142,164 156,158'),
           S.p('M88,150 C76,160 58,164 44,158')) +
           S.c(72, 164, 8) + S.c(128, 164, 8)),
@@ -758,12 +781,14 @@
 
     { id: 'shapes', name: 'Shapes', emoji: '🔷', art: function () {
       return [fit([
-        B(S.c(56, 52, 30)),
-        B(S.r(114, 22, 60, 60, 6)),
+        B(S.c(56, 52, 30)), mark(S.c(56, 52, 30), TH(S.c(56, 52, 15))),
+        B(S.r(114, 22, 60, 60, 6)), mark(S.r(114, 22, 60, 60, 6), TH(S.r(128, 36, 32, 32, 4))),
         B(S.p('M56,102 L88,164 L24,164 Z')),
+        mark(S.p('M56,102 L88,164 L24,164 Z'), TH(S.p('M56,126 L72,158 L40,158 Z'))),
         B(S.p('M144,98 L178,132 L144,166 L110,132 Z')),
-        B(P.star(56, 178, 15)),
-        B(P.heart(140, 178, 13))
+        mark(S.p('M144,98 L178,132 L144,166 L110,132 Z'), TH(S.p('M144,116 L160,132 L144,148 L128,132 Z'))),
+        B(P.star(56, 178, 15)), mark(P.star(56, 178, 15), TH(P.star(56, 178, 7))),
+        B(P.heart(140, 178, 13)), mark(P.heart(140, 178, 13), TH(P.heart(140, 178, 7)))
       ])];
     } }
   ];

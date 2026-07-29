@@ -67,6 +67,22 @@ animals" on `go`/`nature`/`space`/`fun`/`shape` — a rocket or a shape page
 legitimately carries less line than a detailed animal. That is a taste call, not
 a defect; raise it before adding detail.
 
+### Judge a page by fill targets, not ink
+
+`ink%` is only a proxy for detail and has pointed at the wrong work twice. The
+metric that matters is **how many enclosed areas a page has, and how big they
+are** — a page made of five enormous regions is worse to colour than one made of
+twenty medium ones, at any ink density. The animals baseline is ~17 targets at a
+median area of ~176 board units². Section B of the audit lists anything under 12.
+
+The usual cause of a thin page is decoration that is drawn *on* the page rather
+than made *colourable*: an open stroke encloses nothing, and `S.dot()` paints
+solid ink. Ten watermelon seeds drawn with `S.dot` gave a child nothing; the same
+ten as `S.e` outlines gave ten things to colour. Prefer closed shapes.
+
+Some pages are legitimately thin and should be left alone — a "Count 1" page has
+one object by definition, and Whale and Duck sit at 10–11 in the baseline itself.
+
 ### Traps this tool has already fallen into
 
 - **Raw bounding box is not subject size.** Animals carry full-width scenery

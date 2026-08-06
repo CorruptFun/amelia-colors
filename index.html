@@ -9,7 +9,7 @@
 <meta name="author" content="Corrupt Solutions LLC">
 <meta name="application-name" content="Amelia Colors">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://corruptfun.github.io/amelia-colors/">
+<link rel="canonical" href="https://corrupt.solutions/games/amelia-colors/">
 
 <!-- icons -->
 <link rel="icon" href="favicon.ico" sizes="any">
@@ -31,11 +31,18 @@
 <meta name="msapplication-TileImage" content="icon-192.png">
 <meta name="format-detection" content="telephone=no">
 
-<!-- sharing -->
+<!-- sharing.
+     The IMAGE below stays on the always-warm Pages origin, never the
+     corrupt.solutions proxy: X fetches it exactly once, on a tight timeout, at
+     post time, and a serverless cold start loses that race — after which X
+     caches the imageless card per URL and it is stuck there for days.
+     og:url is the canonical corrupt.solutions path so the card is credited to
+     the branded domain and one URL owns the card identity, rather than the
+     share splitting between here and the github.io address. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Amelia Colors">
 <meta property="og:locale" content="en_US">
-<meta property="og:url" content="https://corruptfun.github.io/amelia-colors/">
+<meta property="og:url" content="https://corrupt.solutions/games/amelia-colors/">
 <meta property="og:title" content="Amelia Colors — a coloring book & drawing studio for little artists">
 <meta property="og:description" content="132 illustrated coloring pages, blank paper, glitter brushes and stickers. Works offline, saves on the device, free.">
 <meta property="og:image" content="https://corruptfun.github.io/amelia-colors/og-image.png">

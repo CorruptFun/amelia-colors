@@ -38,7 +38,7 @@ fs.mkdirSync(OUT, { recursive: true });
 // the art files are plain <script> tags that hang everything off window
 const sandbox = { window: {}, Math: Math, console: console };
 vm.createContext(sandbox);
-for (const f of ['art-core.js', 'art-animals.js', 'art-cars.js', 'art-things.js', 'art-learn.js']) {
+for (const f of ['art-core.js', 'art-animals.js', 'art-cars.js', 'art-supercars.js', 'art-things.js', 'art-learn.js']) {
   vm.runInContext(fs.readFileSync(path.join(ROOT, 'js', f), 'utf8'), sandbox, { filename: f });
 }
 

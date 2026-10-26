@@ -142,11 +142,11 @@
     })()];
 
     I.N = ['Nest', (function () {
-      var bowl = S.p('M6,62 C6,46 26,36 50,36 C74,36 94,46 94,62 C94,82 76,94 50,94 C24,94 6,82 6,62 Z');
-      var e1 = S.e(32, 36, 15, 13), e2 = S.e(68, 36, 15, 13), e3 = S.e(50, 24, 15, 13);
+      var bowl = S.p('M8,72 C8,56 28,48 50,48 C72,48 92,56 92,72 C92,88 74,96 50,96 C26,96 8,88 8,72 Z');
+      var e1 = S.e(32, 46, 14, 12), e2 = S.e(68, 46, 14, 12), e3 = S.e(50, 35, 14, 12);
       var eggs = behind(e1 + e2, e3) + behind(e1, e2) + e1;
       return behind(bowl, B(eggs)) + B(bowl) +
-        mark(bowl, S.hair('M10,58 C34,66 66,66 90,58 M12,74 C36,82 64,82 88,74'));
+        mark(bowl, S.hair('M11,68 C34,76 66,76 89,68 M14,82 C36,90 64,90 86,82'));
     })()];
 
     I.O = ['Owl', (function () {
@@ -166,9 +166,9 @@
     })()];
 
     I.Q = ['Queen', (function () {
-      var points = S.p('M16,84 L6,20 L34,44 L50,4 L66,44 L94,20 L84,84 Z');
+      var points = S.p('M16,84 L6,26 L34,50 L50,12 L66,50 L94,26 L84,84 Z');
       var band = S.p('M16,84 L84,84 L84,98 L16,98 Z');
-      return behind(points, B(S.c(6, 14, 6) + S.c(50, 2, 6) + S.c(94, 14, 6))) +
+      return behind(points, B(S.c(6, 20, 6) + S.c(50, 8, 6) + S.c(94, 20, 6))) +
         behind(band, B(points)) + B(band) +
         mark(points, S.c(50, 62, 9) + S.c(30, 66, 7) + S.c(70, 66, 7));
     })()];
@@ -195,11 +195,11 @@
     })()];
 
     I.T = ['Tree', (function () {
-      var top = S.c(50, 34, 26), sideL = S.c(28, 48, 19), sideR = S.c(72, 48, 19);
-      var canopy = top + sideL + sideR;
-      var trunk = S.p('M41,98 L41,60 L59,60 L59,98 Z');
-      return behind(canopy, B(trunk)) + behind(top, sideL + sideR) + B(top) +
-        mark(canopy, S.c(40, 28, 7) + S.c(62, 38, 7) + S.c(34, 54, 6));
+      var canopy = S.p('M24,68 C10,64 4,50 12,38 C6,24 20,12 34,16 ' +
+        'C42,6 60,6 68,16 C84,14 94,28 88,40 C94,54 84,68 70,68 Z');
+      var trunk = S.p('M42,98 L42,62 L58,62 L58,98 Z');
+      return behind(canopy, B(trunk)) + B(canopy) +
+        mark(canopy, S.c(32, 36, 7) + S.c(58, 30, 7) + S.c(68, 50, 7) + S.c(40, 56, 6));
     })()];
 
     I.U = ['Umbrella', (function () {
@@ -220,8 +220,8 @@
     I.W = ['Whale', (function () {
       var body = S.p('M6,60 C6,38 26,24 52,24 C76,24 90,36 92,54 C92,70 84,80 70,84 C58,87 46,86 40,84 C20,82 6,74 6,60 Z');
       var tail = S.p('M86,42 C92,32 98,26 102,26 C102,36 98,46 92,52 C98,58 102,68 102,80 C96,76 90,66 86,56 Z');
-      var stem = P.ribbon([[42, 26, 5], [38, 14, 4], [36, 4, 2.5]]);
-      var puff = P.cloud(36, -2, 8);
+      var stem = P.ribbon([[42, 26, 5], [39, 18, 4], [37, 11, 2.5]]);
+      var puff = P.cloud(37, 7, 7);
       return behind(body + puff, stem) + behind(body, B(tail)) + puff + B(body) +
         mark(body, TH(S.p('M10,66 C28,76 60,80 80,72'))) + P.eye(26, 52, 6);
     })()];
@@ -239,11 +239,12 @@
     })()];
 
     I.Y = ['Yarn', (function () {
-      var ball = S.c(50, 54, 38);
-      var loose = S.p('M50,16 C36,6 22,6 14,14 C22,20 30,22 38,20');
+      var ball = S.c(50, 52, 40);
+      var loose = S.p('M86,70 C98,78 96,92 84,94 C74,96 68,88 74,82');
       return behind(ball, B(loose)) + B(ball) +
-        mark(ball, TH(S.p('M20,32 C40,44 54,62 62,86') + S.p('M34,20 C52,34 70,54 80,72') +
-          S.p('M72,24 C58,44 46,62 28,76') + S.p('M84,46 C72,62 60,74 46,88')));
+        mark(ball, TH(S.p('M12,42 C36,58 62,66 90,62') +
+          S.p('M16,70 C40,58 68,44 86,28') +
+          S.p('M34,88 C44,62 52,36 46,14')));
     })()];
 
     I.Z = ['Zebra', (function () {
@@ -268,15 +269,20 @@
       emoji: ch,
       // the letters own the top band and the picture the middle — they
       // used to overlap, which made both harder to read
+      /* Three bands that must not touch: letters 14…44, picture 50…170,
+         word 174…190. The letters used to run to y=53 against a picture
+         starting at 56 — and several icons draw a little ABOVE their own
+         0…100 box (Q's crown balls, the whale's spout), so they landed
+         in the letter's descender. The picture also only spanned 46…154,
+         just over half the board, which is why an ABC page looked empty
+         beside an animals page. */
       art: function () {
         return [
-          P.star(20, 22, 9), P.star(180, 22, 8),
-          S.glyph(ch, 74, 34, 46),
-          S.glyph(ch.toLowerCase(), 126, 37, 36),
-          // the picture is the page — it was drawn at 0.92 and left the board
-          // half empty next to an animals page
-          at(46, 56, 1.08, icon),
-          S.glyph(word.toUpperCase(), 100, 183, word.length > 8 ? 17 : 22)
+          P.star(22, 24, 8), P.star(178, 24, 8),
+          S.glyph(ch, 76, 29, 38),
+          S.glyph(ch.toLowerCase(), 122, 32, 29),
+          at(41, 48, 1.18, icon),
+          TH(S.glyph(word.toUpperCase(), 100, 182, word.length > 8 ? 16 : 20))
         ];
       }
     };
@@ -285,12 +291,33 @@
   /* ------------------------------------------------------------------
      Counting 1–10
   ------------------------------------------------------------------ */
+  /* Counters must read as SEPARATE objects — the whole point of the
+     page is that a child can count them. Parts.cloud is closed with a
+     flat bottom edge, so a row of clouds lines its baselines up into
+     one long scalloped bar and five of them read as one thing (and
+     the fill regions merge with them). Everything here is round-
+     bottomed and under ~2r wide, so a row always reads as n objects. */
   var COUNT_SHAPES = [
     function (x, y, r) { return P.star(x, y, r); },
     function (x, y, r) { return P.heart(x, y, r); },
     function (x, y, r) { return P.flower(x, y, r * 0.6); },
-    function (x, y, r) { return S.c(x, y, r * 0.9); },
-    function (x, y, r) { return P.cloud(x, y, r * 0.7); }
+    // ball
+    function (x, y, r) {
+      return S.c(x, y, r * 0.88) +
+        S.thinW(S.p('M' + (x - r * 0.88) + ',' + y + ' Q' + x + ',' + (y - r * 0.5) + ' ' + (x + r * 0.88) + ',' + y));
+    },
+    // balloon
+    function (x, y, r) {
+      return S.e(x, y - r * 0.12, r * 0.72, r * 0.86) +
+        S.p('M' + (x - r * 0.16) + ',' + (y + r * 0.74) + ' L' + x + ',' + (y + r * 0.98) +
+            ' L' + (x + r * 0.16) + ',' + (y + r * 0.74) + ' Z');
+    },
+    // apple
+    function (x, y, r) {
+      return S.c(x, y + r * 0.1, r * 0.82) +
+        S.p('M' + x + ',' + (y - r * 0.7) + ' L' + x + ',' + (y - r * 0.98)) +
+        S.thinW(S.e(x + r * 0.34, y - r * 0.92, r * 0.3, r * 0.17, -24));
+    }
   ];
   var COUNT_NAMES = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
 
@@ -350,9 +377,15 @@
         out.push(S.glyph('+', 20, 62, 30));
         counters(b, 88);
         out.push(S.p('M18,118 L182,118'));
-        out.push(S.glyph(String(a) + ' + ' + String(b) + ' =', 74, 150, 30));
-        out.push(B(S.r(134, 128, 46, 44, 10)));
-        out.push(S.glyph('?', 157, 150, 30));
+        /* The sum used to be one glyph, "a + b =", centred at 74 — it
+           overran the answer box, and a STROKED "=" draws the outline of
+           each bar, so its four lines read as three. Two rounded bars
+           are honest about it and are two more things to colour. */
+        out.push(S.glyph(String(a) + ' + ' + String(b), 54, 150, 27));
+        out.push(S.r(100, 141, 24, 7, 3));
+        out.push(S.r(100, 154, 24, 7, 3));
+        out.push(B(S.r(132, 126, 48, 48, 10)));
+        out.push(S.glyph('?', 156, 150, 28));
         return out;
       }
     };
@@ -368,8 +401,11 @@
       id: id, name: name, emoji: emoji,
       art: function () {
         var out = [], W = grid[0].length, H = grid.length;
-        var cell = Math.min(164 / W, 116 / H);
-        var x0 = 100 - W * cell / 2, y0 = 54;
+        /* Leave room under the grid for the word. At 116/H the mosaic
+           ran to y=170 and the label at y=186 landed across the bottom
+           row of tiles and the page frame together. */
+        var cell = Math.min(160 / W, 104 / H);
+        var x0 = 100 - W * cell / 2, y0 = 52;
         var r, c, ch;
         for (r = 0; r < H; r++) {
           for (c = 0; c < W; c++) {
@@ -386,7 +422,7 @@
           out.push(HA(S.glyph(kk, kx, 25, 18, 600)));
         });
         out.push(S.hair('M18,42 L182,42'));
-        out.push(S.glyph(name.toUpperCase(), 100, 186, 16));
+        out.push(TH(S.glyph(name.toUpperCase(), 100, Math.min(y0 + H * cell + 17, 178), 17)));
         return out;
       }
     };
@@ -414,11 +450,19 @@
       '.1111.'
     ], ['1', '2', '3']),
     mosaic('cbn-tree', 'Tree', '🌲', [
-      '..11..',
-      '.1221.',
-      '122221',
-      '..33..',
-      '..33..'
+      '..111..',
+      '.11211.',
+      '1112111',
+      '...3...',
+      '...3...',
+      '..333..'
+    ], ['1', '2', '3']),
+    mosaic('cbn-car', 'Race Car', '🏎️', [
+      '..1111..',
+      '.122221.',
+      '11111111',
+      '.33..33.',
+      '.33..33.'
     ], ['1', '2', '3'])
   ];
 

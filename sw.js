@@ -38,6 +38,7 @@ const PRECACHE = [
   v("./js/art-core.js"),
   v("./js/art-animals.js"),
   v("./js/art-cars.js"),
+  v("./js/art-supercars.js"),
   v("./js/art-things.js"),
   v("./js/art-learn.js"),
   v("./js/audio.js"),

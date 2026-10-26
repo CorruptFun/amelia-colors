@@ -58,11 +58,21 @@
      Real coloring books draw the outer contour heavier than the
      interior detail. bold() / thin() / hair() wrap any primitives. */
   function addClass(name, str) {
-    return str.replace(/<(\w+)([^>]*?)\/>/g, function (m, tag, attrs) {
+    function add(tag, attrs, end) {
       var has = /class="([^"]*)"/.exec(attrs);
-      if (has) return '<' + tag + attrs.replace(has[0], 'class="' + has[1] + ' ' + name + '"') + '/>';
-      return '<' + tag + ' class="' + name + '"' + attrs + '/>';
-    });
+      if (has) return '<' + tag + attrs.replace(has[0], 'class="' + has[1] + ' ' + name + '"') + end;
+      return '<' + tag + ' class="' + name + '"' + attrs + end;
+    }
+    /* <text> is a PAIRED tag, so the self-closing pattern never matched
+       it and thin()/hair() around a glyph silently did nothing — every
+       glyph drew at the full text stroke. That is why small captions
+       and door numbers came out as solid blobs: below about font-size
+       16 the outline is wider than the letterform's own stems. Only
+       <text> is special-cased here; widening the first pattern would
+       also tag the <rect>/<g> that behind() and inside() emit. */
+    return str
+      .replace(/<(\w+)([^>]*?)\/>/g, function (m, tag, attrs) { return add(tag, attrs, '/>'); })
+      .replace(/<(text)([^>]*?)>/g, function (m, tag, attrs) { return add(tag, attrs, '>'); });
   }
   function weight(name) {
     return function () {

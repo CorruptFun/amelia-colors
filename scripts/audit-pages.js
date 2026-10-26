@@ -54,7 +54,7 @@ for (const bin of ['rsvg-convert', 'magick']) {
 // ---- load the art exactly the way the browser does -----------------
 const sandbox = { window: {}, Math: Math, console: console };
 vm.createContext(sandbox);
-for (const f of ['art-core.js', 'art-animals.js', 'art-cars.js', 'art-things.js', 'art-learn.js']) {
+for (const f of ['art-core.js', 'art-animals.js', 'art-cars.js', 'art-supercars.js', 'art-things.js', 'art-learn.js']) {
   vm.runInContext(fs.readFileSync(path.join(ROOT, 'js', f), 'utf8'), sandbox, { filename: f });
 }
 const Art = sandbox.window.Art;

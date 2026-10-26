@@ -52,12 +52,18 @@
     /* ---------------------------------------------------------- HORSE */
     { id: 'horse', name: 'Horse', emoji: '🐴', art: function () {
       var head = S.p('M100,32 C78,32 66,48 66,70 L68,98 C70,118 82,130 100,130 C118,130 130,118 132,98 L134,70 C134,48 122,32 100,32 Z');
-      var body = S.p('M76,108 C58,108 46,124 46,144 C46,164 58,176 78,176 L122,176 C142,176 154,164 154,144 C154,124 142,108 124,108 Z');
-      var legL = leg(66, 150, 24, 38), legR = leg(110, 150, 24, 38);
-      var sil = head + body + legL + legR;
+      /* The body used to hang to y=176 over legs that started at 150,
+         so twelve units of leg showed and the horse read as a blob with
+         feet. Raised and shortened, with the legs lengthened to match. */
+      var body = S.p('M78,106 C62,106 50,120 50,140 C50,158 62,168 80,168 L120,168 C138,168 150,158 150,140 C150,120 138,106 122,106 Z');
+      var legL = leg(66, 142, 24, 44), legR = leg(110, 142, 24, 44);
+      var tail = S.p('M146,120 C166,118 180,136 178,160 C170,148 160,140 148,138 Z');
+      var sil = head + body + legL + legR + tail;
       return [
         sky(sil, Sc.sun(30, 28, 12) + Sc.clouds([[166, 28, 11]])),
         behind(body, B(legL, legR)),
+        behind(body, B(tail)),
+        mark(tail, TH(S.p('M156,128 C164,138 170,148 173,158'))),
         behind(head, B(body)),
         behind(head, B(
           S.p('M78,38 C72,20 76,10 84,13 C91,16 90,32 87,46 Z'),
@@ -77,28 +83,35 @@
         P.smile(100, 117, 9),
         TH(P.blush(76, 96, 8), P.blush(124, 96, 8)),
         hoofBand(68, 178, 20), hoofBand(112, 178, 20),
-        ground(188, sil)
+        ground(190, sil)
       ];
     } },
 
     /* -------------------------------------------------------- DOLPHIN */
-    { id: 'dolphin', name: 'Dolphin', emoji: '🐬', art: function () {
-      var body = S.p('M178,88 C168,78 154,74 140,76 C138,58 124,48 104,50 C74,54 44,74 26,102 C44,124 76,136 106,132 C130,129 146,116 152,100 C162,102 172,97 178,88 Z');
-      var sil = body;
+    { id: 'dolphin', name: 'Dolphin', emoji: '\u{1F42C}', art: function () {
+      // A ribbon spine tapering from the beak to the tail stock, which
+      // is what a dolphin actually is — the old version was an empty
+      // oval with two detached slivers for fins.
+      var body = P.ribbon([[30, 122, 7], [52, 112, 21], [84, 100, 27],
+        [116, 94, 25], [144, 92, 19], [164, 94, 11]]);
+      var beak = S.p('M156,88 C174,86 186,90 190,97 C183,103 166,104 156,100 Z');
+      var dorsal = S.p('M84,76 C92,56 108,44 120,44 C116,62 106,76 98,84 Z');
+      var pec = S.p('M80,126 C86,144 100,154 112,152 C106,138 94,128 84,122 Z');
+      var fluke = S.p('M32,120 C20,112 10,100 12,90 C24,94 34,104 40,116 ' +
+        'C38,128 28,140 14,148 C10,136 18,124 32,120 Z');
+      var sil = body + beak + dorsal + pec + fluke;
       return [
-        sky(sil, Sc.sun(32, 30, 12) + Sc.clouds([[152, 28, 11]])),
-        behind(body, B(
-          S.p('M28,102 C20,88 16,72 18,58 C30,66 40,80 44,92 Z'),          // tail upper
-          S.p('M26,104 C16,110 8,122 6,138 C22,132 34,120 40,110 Z'),      // tail lower
-          S.p('M112,50 C108,36 98,26 84,22 C94,34 100,40 104,52 Z')        // dorsal fin
-        )),
-        B(body),
-        B(S.p('M96,128 C86,142 84,156 90,166 C100,155 108,142 110,132 Z')), // flipper (in front)
-        TH(S.p('M38,108 C58,124 86,130 110,126')),                          // belly line
-        S.c(130, 60, 4),                                                    // blowhole
-        P.bigEye(144, 76, 7),
-        S.p('M164,86 C170,88 175,88 178,87'),                               // smile
-        behind(sil, Sc.waves(162, 3) + Sc.bubbles([[26, 150, 5], [40, 168, 4], [174, 130, 5], [186, 150, 4]]))
+        sky(sil, Sc.sun(166, 30, 12) + Sc.clouds([[52, 26, 11]])),
+        behind(body, B(dorsal)),
+        behind(body, B(fluke)),
+        behind(body + beak, B(pec)),
+        behind(beak, B(body)),
+        B(beak),
+        mark(body, TH(S.p('M44,120 C78,138 126,130 158,104'))),   // belly line
+        mark(body, S.p('M150,88 C156,94 156,100 150,104')),       // melon crease
+        P.bigEye(146, 90, 7),
+        S.p('M158,100 C168,101 178,100 186,97'),                  // smile
+        behind(sil, Sc.waves(168, 3) + Sc.bubbles([[30, 48, 6], [178, 150, 5], [24, 160, 4]]))
       ];
     } },
 
@@ -231,21 +244,39 @@
     } },
 
     /* ------------------------------------------------------------ FISH */
-    { id: 'fish', name: 'Fish', emoji: '🐠', art: function () {
-      var body = S.p('M138,100 C138,68 112,48 80,48 C48,48 24,70 24,100 C24,130 48,152 80,152 C112,152 138,132 138,100 Z');
-      var tail = S.p('M132,100 L176,62 L170,100 L176,138 Z');
-      var finT = S.p('M56,62 C62,40 78,26 100,28 C92,42 88,52 88,64 Z');
-      var finB = S.p('M56,138 C62,160 78,174 100,172 C92,158 88,148 88,136 Z');
-      var sil = body + tail + finT + finB;
+    { id: 'fish', name: 'Fish', emoji: '\u{1F41F}', art: function () {
+      // Rows of scale arcs instead of five loose dots: they close against
+      // one another and the body outline, so every scale is a target.
+      var body = S.e(92, 104, 58, 44);
+      var tail = S.p('M142,104 C158,84 174,74 186,74 C184,94 178,104 170,110 ' +
+        'C178,118 184,130 186,148 C172,146 156,128 142,110 Z');
+      var topFin = S.p('M68,62 C80,44 98,34 112,36 C106,54 92,64 78,70 Z');
+      var botFin = S.p('M78,144 C84,160 98,170 110,168 C104,152 92,144 84,138 Z');
+      var scales = (function () {
+        var out = '', row, i, y, x;
+        for (row = 0; row < 3; row++) {
+          y = 86 + row * 22;
+          /* pitch == arc width, so consecutive scales share endpoints and
+             each row scallops continuously; offsetting alternate rows by
+             half a pitch closes every cell against the row above */
+          for (i = 0; i < 4; i++) {
+            x = 80 + i * 26 + (row % 2) * 13;
+            out += S.p('M' + (x - 13) + ',' + y + ' A14,14 0 0 1 ' + (x + 13) + ',' + y);
+          }
+        }
+        return out;
+      })();
+      var sil = body + tail + topFin + botFin;
       return [
-        behind(body, B(tail, finT, finB)),
+        behind(body, B(tail)),
+        behind(body, B(topFin, botFin)),
         B(body),
-        B(S.p('M58,106 C74,114 74,118 58,126 Z')),              // side fin
-        P.bigEye(48, 84, 9),
-        S.p('M26,108 C36,116 44,118 52,116'),                   // mouth
-        mark(body, TH(S.c(96, 76, 11), S.c(116, 100, 11), S.c(96, 124, 11), S.c(76, 102, 8))),
-        behind(sil, Sc.bubbles([[160, 26, 8], [144, 12, 5], [178, 42, 4], [26, 28, 5]]) +
-          Sc.seaweed(28, 186, 38) + Sc.seaweed(174, 186, 32) + Sc.waves(176, 2))
+        mark(body, S.p('M62,74 C52,92 52,118 62,136')),           // gill plate
+        mark(body, TH(scales)),
+        P.bigEye(54, 92, 9),
+        S.p('M40,112 C46,118 54,120 62,118'),                     // mouth
+        behind(sil, Sc.waves(170, 3) + Sc.seaweed(22, 178, 34) + Sc.seaweed(182, 178, 30) +
+          Sc.bubbles([[28, 48, 7], [48, 28, 5], [176, 44, 6]]))
       ];
     } },
 
@@ -356,33 +387,45 @@
     } },
 
     /* ---------------------------------------------------------- WHALE */
-    { id: 'whale', name: 'Whale', emoji: '🐋', art: function () {
-      var body = S.p('M24,116 C24,86 56,64 96,64 C132,64 158,80 164,106 C166,118 162,130 154,138 C140,150 118,156 94,156 C54,156 24,142 24,116 Z');
-      var tail = S.p('M150,104 C164,90 176,80 186,80 C184,94 178,106 168,114 C178,122 184,134 186,148 C176,146 162,136 150,122 Z');
-      var fin = S.p('M92,150 C100,164 114,170 124,166 C118,154 106,146 96,144 Z');
-      // a real waterspout: a tapering stem opening into a puff of water
-      var stem = P.ribbon([[66, 82, 9], [58, 58, 7], [54, 38, 4]]);
-      var puff = P.cloud(54, 26, 12);
-      var sil = body + tail + fin + stem + puff;
+    { id: 'whale', name: 'Whale', emoji: '\u{1F40B}', art: function () {
+      // The body used to be one huge empty oval with a belly line — ten
+      // fill targets on the whole page. Throat pleats, a jaw, barnacles
+      // and a split fluke give a child something to actually colour.
+      var body = S.p('M22,112 C22,82 54,60 96,60 C134,60 160,76 166,104 ' +
+        'C168,118 162,130 152,138 C138,150 116,156 92,156 C50,156 22,140 22,112 Z');
+      var fluke = S.p('M150,102 C166,86 180,76 190,76 C188,92 180,104 170,112 ' +
+        'C180,120 186,134 188,150 C176,148 160,136 148,120 Z');
+      var fin = S.p('M86,148 C96,164 112,170 124,166 C118,152 104,144 92,142 Z');
+      var stem = P.ribbon([[62, 78, 7], [56, 62, 6], [52, 48, 5]]);
+      var puff = P.cloud(54, 32, 17);
+      var jaw = S.p('M24,106 C42,124 66,130 86,126 C84,136 70,142 50,140 C34,138 24,126 24,116 Z');
+      var sil = body + fluke + fin + stem + puff;
       return [
-        sky(sil, Sc.clouds([[152, 32, 12]])),
+        sky(sil, Sc.clouds([[150, 30, 12]])),
         behind(body + puff, B(stem)),
-        behind(body, B(tail)),
+        behind(body, B(fluke)),
+        mark(fluke, TH(S.p('M160,104 C170,98 178,92 184,86'),
+          S.p('M158,122 C168,130 176,138 182,144'))),
         B(puff),
         B(body),
         behind(body, B(fin)),
-        mark(body, S.p('M28,126 C54,142 126,148 160,130')),     // belly line
-        P.bigEye(50, 98, 8),
-        S.p('M26,110 C40,124 60,128 76,124'),                   // mouth
-        behind(sil, Sc.waves(168, 3) + Sc.bubbles([[26, 152, 5], [180, 164, 4]]))
+        mark(body, B(jaw)),
+        // throat pleats — the detail that makes a whale read as a whale
+        mark(jaw, TH(S.p('M36,116 C40,126 46,132 52,136') +
+          S.p('M48,122 C52,130 58,136 64,138') +
+          S.p('M62,126 C66,132 72,136 78,137'))),
+        mark(body, S.c(118, 78, 8) + S.c(140, 92, 6) + S.c(104, 70, 5)),  // barnacles
+        P.bigEye(48, 98, 8),
+        TH(S.p('M58,74 L64,80')),                                 // blowhole crease
+        behind(sil, Sc.waves(170, 3) + Sc.bubbles([[26, 152, 5], [180, 164, 4]]))
       ];
     } },
 
     /* -------------------------------------------------------- UNICORN */
     { id: 'unicorn', name: 'Unicorn', emoji: '🦄', art: function () {
       var head = S.p('M100,38 C80,38 68,52 68,72 L70,104 C72,124 82,136 100,136 C118,136 128,124 130,104 L132,72 C132,52 120,38 100,38 Z');
-      var body = S.p('M76,114 C58,114 46,130 46,150 C46,170 58,182 78,182 L122,182 C142,182 154,170 154,150 C154,130 142,114 124,114 Z');
-      var legL = leg(66, 156, 24, 36), legR = leg(110, 156, 24, 36);
+      var body = S.p('M78,112 C62,112 50,126 50,146 C50,164 62,174 80,174 L120,174 C138,174 150,164 150,146 C150,126 138,112 122,112 Z');
+      var legL = leg(66, 148, 24, 42), legR = leg(110, 148, 24, 42);
       var horn = S.p('M100,4 L88,40 L112,40 Z');
       var sil = head + body + legL + legR + horn;
       return [
@@ -409,7 +452,7 @@
         S.dot(91, 112, 4), S.dot(109, 112, 4),
         P.smile(100, 123, 9),
         TH(P.blush(76, 102, 8), P.blush(124, 102, 8)),
-        hoofBand(68, 184, 20), hoofBand(112, 184, 20)
+        hoofBand(68, 180, 20), hoofBand(112, 180, 20)
       ];
     } },
 
@@ -511,28 +554,37 @@
     } },
 
     /* ----------------------------------------------------------- DUCK */
-    { id: 'duck', name: 'Duck', emoji: '🦆', art: function () {
-      var body = S.p('M40,120 C48,102 68,92 92,92 C118,92 136,106 136,126 ' +
-        'C136,148 114,164 84,164 C54,164 34,150 34,134 C34,128 36,124 40,120 Z');
-      var head = S.c(146, 62, 24);
-      var neck = P.ribbon([[112, 116, 19], [120, 98, 17], [130, 82, 15]]);
-      var beak = S.p('M162,54 C176,52 182,60 180,68 C170,72 160,66 158,60 Z');
-      var tail = S.p('M42,116 C32,102 20,98 15,106 C18,116 28,124 44,128 Z');
-      // a folded wing tucked against the back — a concentric oval in
-      // the middle of the body just reads as a swim ring
-      var wing = S.p('M58,110 C76,102 102,108 114,122 C98,134 72,134 58,124 Z');
-      var sil = body + head + neck + beak + tail;
+    { id: 'duck', name: 'Duck', emoji: '\u{1F986}', art: function () {
+      /* Front-facing, like the cat and the penguin. Two side-view
+         attempts both failed the same way: a wide body with a folded
+         wing marked inside it leaves a ring between the wing outline
+         and the body outline, and the page reads as a rubber swim ring
+         with a duck's head on it. */
+      var body = S.e(100, 130, 50, 40);
+      var head = S.c(100, 66, 34);
+      var bill = S.e(100, 78, 27, 11);
+      var wingL = S.p('M58,112 C42,120 40,144 54,158 C64,150 68,128 64,112 Z');
+      var wingR = S.p('M142,112 C158,120 160,144 146,158 C136,150 132,128 136,112 Z');
+      var footL = S.p('M80,166 C72,176 62,180 62,185 L94,185 C94,178 90,170 88,164 Z');
+      var footR = S.p('M120,166 C128,176 138,180 138,185 L106,185 C106,178 110,170 112,164 Z');
+      var sil = body + head + wingL + wingR + footL + footR;
       return [
-        sky(sil, Sc.sun(30, 28, 12) + Sc.clouds([[92, 26, 11]])),
-        behind(body, B(tail)),
-        behind(body + head, B(neck)),
-        behind(head, B(beak)),
-        B(body),
-        mark(body, B(wing)),
-        mark(wing, TH(S.p('M66,114 C82,110 98,114 106,120'), S.p('M64,122 C80,119 94,122 100,127'))),
+        sky(sil, Sc.sun(30, 28, 12) + Sc.clouds([[166, 26, 11]])),
+        behind(body, B(footL, footR)),
+        TH(S.p('M70,185 L70,176 M78,185 L78,174 M86,185 L86,176') +
+           S.p('M114,185 L114,176 M122,185 L122,174 M130,185 L130,176')),
+        behind(body, B(wingL, wingR)),
+        mark(wingL, TH(S.p('M50,126 C58,130 62,138 62,148'))),
+        mark(wingR, TH(S.p('M150,126 C142,130 138,138 138,148'))),
+        behind(head, B(body)),
+        mark(body, S.e(100, 136, 29, 22)),                        // tummy
         B(head),
-        P.bigEye(152, 56, 8),
-        behind(sil, Sc.waves(172, 3) + Sc.bubbles([[26, 156, 4], [180, 150, 5]]))
+        behind(bill, B(S.p('M100,88 L100,96'))),
+        B(bill),
+        mark(bill, TH(S.p('M84,80 C94,85 106,85 116,80'))) + S.dot(92, 73, 2) + S.dot(108, 73, 2),
+        P.eyes(100, 54, 14, 9),
+        TH(P.blush(78, 64, 8), P.blush(122, 64, 8)),
+        ground(182, sil, Sc.tufts(182))
       ];
     } },
 

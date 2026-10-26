@@ -268,7 +268,9 @@
     } },
 
     { id: 'rainbow', name: 'Rainbow', emoji: '🌈', art: function () {
-      var cloudL = P.cloud(38, 146, 24), cloudR = P.cloud(162, 146, 24);
+      // Parts.cloud spans -1.5r…+1.3r, so r=24 at x=38 put the left
+      // cloud through the page frame at x=2. Pulled in and trimmed.
+      var cloudL = P.cloud(48, 146, 20), cloudR = P.cloud(152, 146, 20);
       var arcs = (function () {
         var out = '', i, r;
         for (i = 0; i < 6; i++) {
@@ -302,22 +304,31 @@
 
     { id: 'snowman', name: 'Snowman', emoji: '⛄', art: function () {
       var base = S.c(100, 156, 40), mid = S.c(100, 100, 30), head = S.c(100, 58, 23);
-      var brim = S.p('M74,42 L126,42 L126,34 L74,34 Z');
-      var top = S.p('M82,34 L118,34 L118,8 L82,8 Z');
-      var armL = P.ribbon([[76, 96, 4], [50, 84, 3.5], [28, 74, 3]]);
-      var armR = P.ribbon([[124, 96, 4], [150, 84, 3.5], [172, 74, 3]]);
+      var brim = S.p('M68,44 L132,44 L132,35 L68,35 Z');
+      var top = S.p('M80,35 L120,35 L120,6 L80,6 Z');
+      var armL = P.ribbon([[80, 100, 5.5], [58, 88, 5], [38, 78, 4]]);
+      var armR = P.ribbon([[120, 100, 5.5], [142, 88, 5], [162, 78, 4]]);
+      // a scarf over the join: the biggest single thing to colour here,
+      // and it hides the seam between the head ball and the body ball
+      var scarf = S.p('M74,70 C86,82 114,82 126,70 L130,86 C116,98 84,98 70,86 Z');
+      var tail = S.p('M118,92 C130,102 132,120 126,136 L110,130 C116,114 114,100 108,94 Z');
       return [fit([
-        behind(base + mid + head, armL + armR),
-        S.p('M28,74 L18,66 M28,74 L18,82 M172,74 L182,66 M172,74 L182,82'),
+        // the scarf has to occlude the arms too, or the twigs lie across
+        // it and the snowman reads as sticks laid over a pile of balls
+        behind(base + mid + head + scarf + tail, armL + armR),
+        S.thinW(S.p('M38,78 L26,70 M38,78 L24,81 M162,78 L174,70 M162,78 L176,81')),
         behind(mid, B(base)), behind(head, B(mid)),
         behind(brim, B(head)),
         behind(top, B(brim)), B(top),
+        mark(top, S.thinW(S.p('M80,16 L120,16'))),
+        behind(scarf, B(tail)), B(scarf),
+        mark(scarf, S.thinW(S.p('M86,78 L85,90 M100,81 L100,93 M114,78 L115,90'))),
         mark(base, S.c(100, 146, 8) + S.c(100, 168, 8)),
-        mark(mid, S.c(100, 92, 7) + S.c(100, 112, 7)),
+        mark(mid, S.c(100, 110, 7)),
         P.eye(92, 52, 6), P.eye(108, 52, 6),
         S.p('M100,56 L126,63 L100,70 Z'),
         S.dot(88, 70, 2), S.dot(100, 74, 2), S.dot(112, 70, 2),
-        behind(base + mid + head + armL + armR,
+        behind(base + mid + head + armL + armR + scarf + tail,
           P.star(24, 24, 7) + P.star(178, 30, 6) + P.star(16, 130, 6) + P.star(186, 140, 7))
       ])];
     } },
@@ -377,18 +388,27 @@
       var torso = S.p('M66,96 C66,86 78,80 100,80 C122,80 134,86 134,96 L134,146 C134,154 128,158 120,158 L80,158 C72,158 66,154 66,146 Z');
       var armL = P.ribbon([[70, 92, 11], [46, 112, 10], [38, 132, 9]]);
       var armR = P.ribbon([[130, 92, 11], [154, 112, 10], [162, 132, 9]]);
-      var legL = S.p('M80,158 L80,190 L60,190 L60,196 L96,196 L96,158 Z');
-      var legR = S.p('M120,158 L120,190 L140,190 L140,196 L104,196 L104,158 Z');
+      var legL = S.p('M80,158 L80,180 L96,180 L96,158 Z');
+      var legR = S.p('M104,158 L104,180 L120,180 L120,158 Z');
+      var bootL = S.p('M76,178 L98,178 L98,190 C98,194 94,196 88,196 L68,196 C64,196 62,192 66,188 Z');
+      var bootR = S.p('M124,178 L102,178 L102,190 C102,194 106,196 112,196 L132,196 C136,196 138,192 134,188 Z');
       return [fit([
         behind(torso + helmet, armL + armR),
         behind(torso, legL + legR),
+        behind(legL + legR, B(bootL, bootR)),
         behind(helmet, B(torso)),
         B(helmet),
         mark(helmet, S.c(100, 60, 26)),
-        mark(S.c(100, 60, 26), S.p('M84,52 C88,44 98,40 108,42')),
-        mark(torso, S.c(100, 106, 10) + S.r(84, 122, 32, 14, 4)),
-        behind(helmet + torso + armL + armR + legL + legR,
-          P.star(24, 34, 11) + P.star(174, 44, 9) + P.star(30, 160, 8) + P.star(180, 152, 10))
+        // an empty visor reads as a scarecrow — every other character on
+        // these pages has a face, and this one is the page's whole subject
+        P.eyes(100, 56, 10, 7),
+        P.smile(100, 68, 8),
+        mark(S.c(100, 60, 26), S.hairW(S.p('M82,50 C86,42 96,38 106,40'))),
+        B(S.c(42, 134, 9)), B(S.c(158, 134, 9)),              // gloves
+        mark(torso, S.c(100, 106, 10) + S.r(82, 122, 36, 16, 4)),
+        mark(S.r(82, 122, 36, 16, 4), S.thinW(S.p('M94,122 L94,138 M106,122 L106,138'))),
+        behind(helmet + torso + armL + armR + legL + legR + bootL + bootR,
+          P.star(24, 34, 11) + P.star(174, 44, 9) + P.star(26, 170, 8) + P.star(182, 160, 10))
       ])];
     } },
 

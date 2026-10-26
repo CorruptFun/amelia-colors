@@ -34,11 +34,39 @@ starting a server from the shell. `dev-server.py` is the underlying static serve
 | `js/art-core.js` | the shape DSL — `S` primitives, `bold`/`thin`/`hair` line weights, `behind`/`inside` occlusion helpers |
 | `js/art-animals.js` | 29 pages — **the quality bar**; house rules documented at the top of the file |
 | `js/art-things.js` | 37 pages |
-| `js/art-cars.js` | 13 pages — see Known gaps |
+| `js/art-cars.js` | 13 pages — simple side profiles, for the younger child |
+| `js/art-supercars.js` | 6 pages — detailed three-quarter perspective, for the older child |
 | `js/art-learn.js` | alphabet, numbers, shapes |
 | `js/paint.js` | paint layer, flood fill, undo/redo |
 | `scripts/render-sheets.js` | renders contact sheets — use this to check art visually |
 | `scripts/audit-pages.js` | **measures** every page for style consistency and crowding — run it after art changes |
+
+## Super Cars — the three-quarter pages
+
+`js/art-supercars.js` is the only category drawn in perspective, and it is
+constructed rather than eyeballed — three attempts at placing coordinates by
+hand produced a lumpy Beetle. Read the header comment in that file before
+touching it. The shape of it:
+
+1. A **side profile** is a run of points along the near flank.
+2. The profile is copied back by `depth`, scaled per point by `depthScale`,
+   giving the far flank. The outer silhouette runs along the FAR contour,
+   because it is the higher of the two.
+3. One cross line per profile point cuts the top of the car into real quads —
+   fascia, hood, windscreen, roof, deck — and `bil()` / `panel()` place detail
+   *on* a named quad so a headlight shares its surface's perspective.
+
+Three things go wrong unless they are deliberate, and all three have:
+
+- **`depthScale` must taper over the greenhouse** (~0.58). One constant offset
+  makes the roof as wide as the body and the car reads as a van.
+- **`depthScale` entries can be `[kx, ky]`**, and the rear needs a bigger `ky`.
+  The far flank is not just a translated copy — it is further away, so its
+  vertical extents compress. Without it the far contour sinks onto the near one
+  and the greenhouse pinches shut into a sliver.
+- **Flank detail must be masked by the wheel openings** (`behind(c.wells, …)`).
+  A door shut line in exactly the right place still runs across the tyre,
+  because the wheels are drawn after it.
 
 ## House rules for authoring a page
 
@@ -60,9 +88,8 @@ page finished.
 `node scripts/audit-pages.js` rasterises every page, flood-fills it, and reports
 each category against the `animals` baseline. Run it after any art change.
 
-As of 2026-07-28 the style pass is complete: **0/132 pages missing a bold outer
-contour** (was 91), **0/132 stroke overrides** (was 4), category span range
-157–180.5 board units (was 148–192). Remaining deviations are all "lighter than
+As of 2026-10-26: **139 pages**, 0 missing a bold outer contour, 0 stroke
+overrides, category span range 157–172.7 board units. Remaining deviations are all "lighter than
 animals" on `go`/`nature`/`space`/`fun`/`shape` — a rocket or a shape page
 legitimately carries less line than a detailed animal. That is a taste call, not
 a defect; raise it before adding detail.
@@ -99,6 +126,22 @@ one object by definition, and Whale and Duck sit at 10–11 in the baseline itse
   canopies). Bold thickens every overlap into a crescent too thin to fill.
 - **Don't infer quality from a raw `behind()` count.** `art-cars.js` was once
   flagged that way and is in fact one of the two best categories.
+- **A stroked glyph under ~font-size 16 renders as a solid blob.** `S.glyph`
+  is `fill:none` with a ~2.2 unit stroke, which is wider than a small
+  letterform's own stems, so the counters fill in. Door numbers and captions
+  need to be big, or wrapped in `thin()`.
+- **`thin()`/`hair()` silently did nothing to a glyph** until 2026-10-26:
+  `addClass` only matched self-closing tags and `<text>` is paired, so every
+  glyph drew at the full text stroke however it was wrapped. Fixed in
+  `art-core.js`; if you add another paired tag, it needs the same treatment.
+- **`Parts.cloud` is closed with a flat bottom edge.** A row of them lines
+  their baselines up into one continuous scalloped bar, so five clouds read as
+  one object and their fill regions merge — which quietly broke the counting
+  pages. Counters must be round-bottomed and under ~2r wide.
+- **Watch the spoke count on a wheel.** The roots all land on one small hub
+  circle, so at 10–12 spokes they crowd into a ring of slivers; a 12-spoke wire
+  wheel scored 62 untappable regions on its own. Eight is the ceiling, and the
+  hub should grow with `n`.
 
 ## Deploy
 

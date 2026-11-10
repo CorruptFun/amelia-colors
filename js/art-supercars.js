@@ -543,6 +543,6 @@
 
   ];
 
-  Art.categories.push({ id: 'super', name: 'Super Cars', emoji: '🏎️', pages: C });
+  Art.categories.push({ id: 'super', name: 'Super Cars', emoji: '🏎️', color: '#E11D48', pages: C });
   C.forEach(function (p) { Art.pages[p.id] = p; });
 })(window.Art);

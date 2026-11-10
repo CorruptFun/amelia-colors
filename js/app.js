@@ -203,7 +203,9 @@
     grid.innerHTML = '';
     Art.categories.forEach(function (c) {
       var b = el('button', 'card');
-      b.style.background = 'linear-gradient(160deg,' + tint(c.color, 22) + ',' + c.color + ')';
+      // A category without a colour must not stop init — the home buttons are wired after this.
+      var col = c.color || '#64748B';
+      b.style.background = 'linear-gradient(160deg,' + tint(col, 22) + ',' + col + ')';
       b.appendChild(el('span', 'c-emoji', c.emoji));
       b.appendChild(el('span', 'c-name', c.name));
       b.appendChild(el('span', 'c-count', c.pages.length + ' pages'));
